@@ -27,6 +27,9 @@ func Run(config *Config, impl Server) (*Broker, error) {
 		return nil, err
 	}
 	_, err = kafka.Run(&config.KafkaConfig, k)
+	if err != nil {
+		return nil, err
+	}
 	broker := &Broker{}
 	return broker, nil
 }
