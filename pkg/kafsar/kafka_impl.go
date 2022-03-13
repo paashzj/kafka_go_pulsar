@@ -242,7 +242,6 @@ func (k *KafkaImpl) SaslAuth(req service.SaslReq) (bool, service.ErrorCode) {
 	return true, service.NONE
 }
 
-
 func (k *KafkaImpl) SaslAuthTopic(req service.SaslReq, topic, permissionType string) (bool, service.ErrorCode) {
 	auth, err := k.server.AuthTopic(req.Username, req.Password, req.ClientId, topic, permissionType)
 	if err != nil || !auth {
