@@ -20,14 +20,18 @@ package main
 type ExampleKafsarImpl struct {
 }
 
-func (e ExampleKafsarImpl) Auth(username string, password string) (bool, error) {
+func (e ExampleKafsarImpl) Auth(username string, password string, clientId string) (bool, error) {
 	return true, nil
 }
 
-func (e ExampleKafsarImpl) AuthTopic(username, password, topic string) (bool, error) {
+func (e ExampleKafsarImpl) AuthTopic(username string, password, clientId, topic, permissionType string) (bool, error) {
 	return true, nil
 }
 
-func (e ExampleKafsarImpl) AuthTopicGroup(username string, password, consumerGroup string) (bool, error) {
+func (e ExampleKafsarImpl) AuthTopicGroup(username string, password, clientId, consumerGroup string) (bool, error) {
 	return true, nil
+}
+
+func (e ExampleKafsarImpl) PulsarSubscription(groupId string) (string, error) {
+	return groupId, nil
 }
