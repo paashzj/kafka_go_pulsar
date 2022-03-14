@@ -99,6 +99,11 @@ func TestFetchPartitionNoMessage(t *testing.T) {
 	}
 	_, err = k.FetchPartition(&addr, topic, &fetchPartitionReq)
 	assert.Nil(t, err)
+
+	url := "http://localhost:8080/admin/v2/persistent/public/default/" + topic + "/subscriptions"
+	request, err := HttpGetRequest(url)
+	assert.Nil(t, err)
+	assert.Contains(t, string(request), subscriptionPrefix)
 }
 
 func TestFetchAndCommitOffset(t *testing.T) {

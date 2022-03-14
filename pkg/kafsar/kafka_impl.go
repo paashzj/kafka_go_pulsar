@@ -197,7 +197,7 @@ func (k *KafkaImpl) OffsetCommitPartition(addr net.Addr, topic string, req *serv
 func (k *KafkaImpl) OffsetFetch(addr net.Addr, topic string, req *service.OffsetFetchPartitionReq) (*service.OffsetFetchPartitionResp, error) {
 	logrus.Infof("%s fetch topic: %s offset, partition: %d", addr.String(), topic, req.PartitionId)
 	fullNameTopic := k.kafsarConfig.NamespacePrefix + "/" + topic
-	groupId, err := k.server.SubscriptionName(req.GroupId)
+	subscriptionName, err := k.server.SubscriptionName(req.GroupId)
 	if err != nil {
 		logrus.Errorf("sync group %s failed when offset fetch, error: %s", req.GroupId, err)
 	}
@@ -206,8 +206,8 @@ func (k *KafkaImpl) OffsetFetch(addr net.Addr, topic string, req *service.Offset
 	k.mutex.RUnlock()
 	if !exist {
 		k.mutex.Lock()
-		metadata := ConsumerMetadata{groupId: groupId, messageIds: list.New()}
-		channel, consumer, err := k.createConsumer(topic, req.GroupId)
+		metadata := ConsumerMetadata{groupId: req.GroupId, messageIds: list.New()}
+		channel, consumer, err := k.createConsumer(topic, subscriptionName)
 		if err != nil {
 			logrus.Errorf("%s, create channel failed, error: %s", topic, err)
 			return &service.OffsetFetchPartitionResp{
