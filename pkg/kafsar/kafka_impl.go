@@ -197,7 +197,7 @@ func (k *KafkaImpl) OffsetCommitPartition(addr net.Addr, topic string, req *serv
 func (k *KafkaImpl) OffsetFetch(addr net.Addr, topic string, req *service.OffsetFetchPartitionReq) (*service.OffsetFetchPartitionResp, error) {
 	logrus.Infof("%s fetch topic: %s offset, partition: %d", addr.String(), topic, req.PartitionId)
 	fullNameTopic := k.kafsarConfig.NamespacePrefix + "/" + topic
-	groupId, err := k.server.PulsarSubscription(req.GroupId)
+	groupId, err := k.server.SubscriptionName(req.GroupId)
 	if err != nil {
 		logrus.Errorf("sync group %s failed when offset fetch, error: %s", req.GroupId, err)
 	}
