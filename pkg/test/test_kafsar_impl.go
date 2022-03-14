@@ -32,6 +32,6 @@ func (k KafsarImpl) AuthTopicGroup(username string, password, clientId, consumer
 	return true, nil
 }
 
-func (k KafsarImpl) PulsarSubscription(groupId string) (string, error) {
+func (k KafsarImpl) SubscriptionName(groupId string) (string, error) {
 	return groupId, nil
 }
