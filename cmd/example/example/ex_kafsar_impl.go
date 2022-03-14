@@ -33,5 +33,5 @@ func (e ExampleKafsarImpl) AuthTopicGroup(username string, password, clientId, c
 }
 
 func (e ExampleKafsarImpl) SubscriptionName(groupId string) (string, error) {
-	return "kafsar_sub_" + groupId, nil
+	return groupId, nil
 }

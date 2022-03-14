@@ -262,11 +262,11 @@ func (k *KafkaImpl) Disconnect(addr net.Addr) {
 	panic("implement me")
 }
 
-func (k *KafkaImpl) createConsumer(topic, groupId string) (chan pulsar.ConsumerMessage, pulsar.Consumer, error) {
+func (k *KafkaImpl) createConsumer(topic, subscriptionName string) (chan pulsar.ConsumerMessage, pulsar.Consumer, error) {
 	channel := make(chan pulsar.ConsumerMessage, k.kafsarConfig.ConsumerReceiveQueueSize)
 	options := pulsar.ConsumerOptions{
 		Topic:                       topic,
-		SubscriptionName:            groupId,
+		SubscriptionName:            subscriptionName,
 		Type:                        pulsar.Failover,
 		SubscriptionInitialPosition: pulsar.SubscriptionPositionEarliest,
 		MessageChannel:              channel,
