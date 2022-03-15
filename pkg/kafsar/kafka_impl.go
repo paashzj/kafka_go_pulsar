@@ -147,14 +147,6 @@ func (k *KafkaImpl) FetchPartition(addr net.Addr, topic string, req *service.Fet
 }
 
 func (k *KafkaImpl) GroupJoin(addr net.Addr, req *service.JoinGroupReq) (*service.JoinGroupResp, error) {
-	user, exist := k.userInfoManager[addr.String()]
-	if !exist {
-		logrus.Errorf("fetch partition failed when get username by addr %s, kafka topic: %s", addr.String(), topic)
-		return &service.FetchPartitionResp{
-			PartitionId: req.PartitionId,
-			ErrorCode:   service.UNKNOWN_SERVER_ERROR,
-		}, nil
-	}
 	logrus.Infof("%s joining to group: %s, memberId: %s", addr.String(), req.GroupId, req.MemberId)
 	joinGroupResp, err := k.groupCoordinator.HandleJoinGroup(req.GroupId, req.MemberId, req.ClientId, req.ProtocolType,
 		req.SessionTimeout, req.GroupProtocols)
