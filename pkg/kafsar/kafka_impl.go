@@ -200,15 +200,15 @@ func (k *KafkaImpl) OffsetListPartition(addr net.Addr, topic string, req *servic
 }
 
 func (k *KafkaImpl) OffsetCommitPartition(addr net.Addr, topic string, req *service.OffsetCommitPartitionReq) (*service.OffsetCommitPartitionResp, error) {
-	logrus.Infof("%s topic: %s, partition: %d, commit offset: %d", addr.String(), topic, req.PartitionId, req.OffsetCommitOffset)
 	user, exist := k.userInfoManager[addr.String()]
 	if !exist {
-		logrus.Errorf("offset commit failed when get username by addr %s, kafka topic: %s", addr.String(), topic)
+		logrus.Errorf("offset commit failed when get userinfo by addr %s, kafka topic: %s", addr.String(), topic)
 		return &service.OffsetCommitPartitionResp{
 			PartitionId: req.PartitionId,
 			ErrorCode:   service.UNKNOWN_SERVER_ERROR,
 		}, nil
 	}
+	logrus.Infof("%s topic: %s, partition: %d, commit offset: %d", addr.String(), topic, req.PartitionId, req.OffsetCommitOffset)
 	fullNameTopic, err := k.server.KafkaConsumeTopic(user.username, topic)
 	if err != nil {
 		logrus.Errorf("offset commit failed when get pulsar topic %s, kafka topic: %s", addr.String(), topic)
@@ -242,14 +242,14 @@ func (k *KafkaImpl) OffsetCommitPartition(addr net.Addr, topic string, req *serv
 }
 
 func (k *KafkaImpl) OffsetFetch(addr net.Addr, topic string, req *service.OffsetFetchPartitionReq) (*service.OffsetFetchPartitionResp, error) {
-	logrus.Infof("%s fetch topic: %s offset, partition: %d", addr.String(), topic, req.PartitionId)
 	user, exist := k.userInfoManager[addr.String()]
 	if !exist {
-		logrus.Errorf("offset fetch failed when get username by addr %s, kafka topic: %s", addr.String(), topic)
+		logrus.Errorf("offset fetch failed when get userinfo by addr %s, kafka topic: %s", addr.String(), topic)
 		return &service.OffsetFetchPartitionResp{
 			ErrorCode: int16(service.UNKNOWN_SERVER_ERROR),
 		}, nil
 	}
+	logrus.Infof("%s fetch topic: %s offset, partition: %d", addr.String(), topic, req.PartitionId)
 	fullNameTopic, err := k.server.KafkaConsumeTopic(user.username, topic)
 	if err != nil {
 		logrus.Errorf("offset fetch failed when get pulsar topic %s, kafka topic: %s", addr.String(), topic)
