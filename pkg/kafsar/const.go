@@ -1,5 +1,5 @@
 package kafsar
 
 const (
-	partitionSuffixFormat = "-partition-%d"
+	PartitionSuffixFormat = "-partition-%d"
 )

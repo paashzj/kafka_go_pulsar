@@ -334,7 +334,7 @@ func (k *KafkaImpl) Disconnect(addr net.Addr) {
 func (k *KafkaImpl) createConsumer(topic string, partition int, subscriptionName string) (chan pulsar.ConsumerMessage, pulsar.Consumer, error) {
 	channel := make(chan pulsar.ConsumerMessage, k.kafsarConfig.ConsumerReceiveQueueSize)
 	options := pulsar.ConsumerOptions{
-		Topic:                       topic + fmt.Sprintf(partitionSuffixFormat, partition),
+		Topic:                       topic + fmt.Sprintf(PartitionSuffixFormat, partition),
 		SubscriptionName:            subscriptionName,
 		Type:                        pulsar.Failover,
 		SubscriptionInitialPosition: pulsar.SubscriptionPositionEarliest,
