@@ -106,6 +106,7 @@ func (k *KafkaImpl) FetchPartition(addr net.Addr, topic string, req *service.Fet
 	recordBatch := service.RecordBatch{Records: records}
 	var baseOffset int64
 	fistMessage := true
+	fetchStart := time.Now()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(k.kafsarConfig.MaxFetchWaitMs)*time.Millisecond)
 	defer cancel()
 OUT:
@@ -129,7 +130,7 @@ OUT:
 				messageId: message.ID(),
 				offset:    offset,
 			})
-			if len(recordBatch.Records) >= k.kafsarConfig.MaxFetchRecord {
+			if time.Since(fetchStart).Milliseconds() >= int64(k.kafsarConfig.MaxFetchWaitMs) || len(recordBatch.Records) >= k.kafsarConfig.MaxFetchRecord {
 				break OUT
 			}
 		case <-ctx.Done():
