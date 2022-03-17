@@ -9,6 +9,7 @@ require (
 	github.com/gogo/protobuf v1.3.2
 	github.com/google/uuid v1.3.0
 	github.com/paashzj/kafka_go v0.0.6-0.20220316090855-0cbcac128ec9
+	github.com/paashzj/pulsar_proto_go v0.0.0-20220317131658-a079cc6af64d
 	github.com/segmentio/kafka-go v0.4.26
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.1

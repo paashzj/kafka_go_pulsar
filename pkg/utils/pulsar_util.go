@@ -26,6 +26,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/paashzj/kafka_go_pulsar/pkg/constant"
 	"github.com/paashzj/kafka_go_pulsar/pkg/model"
+	pb "github.com/paashzj/pulsar_proto_go"
 	"github.com/sirupsen/logrus"
 	"strings"
 	"time"
@@ -41,14 +42,14 @@ func ReadEarliestMsg(fullTopic string, maxWaitMs int, partition int, pulsarClien
 	return readNextMsg(readerOptions, maxWaitMs, pulsarClient)
 }
 
-func GetLatestMsgId(topic, fullTopic string, partition int, url string) (msg []byte, err error) {
+func GetLatestMsgId(topic, fullTopic string, partition int, addr string) (msg []byte, err error) {
 	tenant, namespace, err := getTenantAndNamespace(fullTopic)
 	if err != nil {
 		logrus.Errorf("get tenant and namespace failed. topic: %s, err: %s", fullTopic, err)
 		return nil, err
 	}
-	url = url + constant.LastMsgIdUrl
-	url = fmt.Sprintf(url, tenant, namespace, topic+fmt.Sprintf(constant.PartitionSuffixFormat, partition))
+	urlFormat := addr + constant.LastMsgIdUrl
+	url := fmt.Sprintf(urlFormat, tenant, namespace, topic+fmt.Sprintf(constant.PartitionSuffixFormat, partition))
 	msg, err = HttpGet(url, nil, nil)
 	if err != nil {
 		logrus.Errorf("unmarshal message id failed., topic: %s, err: %s", fullTopic, err)
@@ -122,11 +123,11 @@ func generateMsgBytes(msgBytes []byte) ([]byte, error) {
 		logrus.Errorf("unmarsha failed. msg: %s, err: %s", string(msgBytes), err)
 		return nil, err
 	}
-	pulsarMessageData := model.MessageDataID{
-		LedgerID:     proto.Uint64(uint64(msgId.LedgerID)),
-		EntryID:      proto.Uint64(uint64(msgId.EntryID)),
-		BatchIdx:     proto.Int32(msgId.BatchIdx),
-		PartitionIdx: proto.Int32(msgId.PartitionIdx),
+	pulsarMessageData := pb.MessageIdData{
+		LedgerId:   proto.Uint64(uint64(msgId.LedgerID)),
+		EntryId:    proto.Uint64(uint64(msgId.EntryID)),
+		BatchIndex: proto.Int32(msgId.BatchIdx),
+		Partition:  proto.Int32(msgId.PartitionIdx),
 	}
 	data, err := proto.Marshal(&pulsarMessageData)
 	if err != nil {

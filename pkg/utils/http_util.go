@@ -63,9 +63,13 @@ func HttpGet(url string, params map[string]string, header map[string]string) (re
 		logrus.Errorf("get response failed. err: %s", err)
 		return nil, err
 	}
-	if response.StatusCode >= http.StatusOK && response.StatusCode < http.StatusMultipleChoices {
+	if statusCodeSuccess(response.StatusCode) {
 		return msg, nil
 	}
 	logrus.Errorf("http request failed. code is： %d, msg: %s", response.StatusCode, string(msg))
 	return nil, errors.New("http request failed")
+}
+
+func statusCodeSuccess(code int) bool {
+	return code >= http.StatusOK && code < http.StatusMultipleChoices
 }

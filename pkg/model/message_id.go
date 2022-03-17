@@ -17,30 +17,9 @@
 
 package model
 
-import "github.com/gogo/protobuf/proto"
-
 type MessageID struct {
 	LedgerID     int64
 	EntryID      int64
 	BatchIdx     int32
 	PartitionIdx int32
-}
-
-type MessageDataID struct {
-	LedgerID     *uint64 `protobuf:"varint,1,req,name=ledgerId" json:"ledgerId,omitempty"`
-	EntryID      *uint64 `protobuf:"varint,2,req,name=entryId" json:"entryId,omitempty"`
-	BatchIdx     *int32  `protobuf:"varint,4,opt,name=batch_index,json=batchIndex,def=-1" json:"batch_index,omitempty"`
-	PartitionIdx *int32  `protobuf:"varint,3,opt,name=partition,def=-1" json:"partition,omitempty"`
-}
-
-func (m *MessageDataID) Reset() {
-	*m = MessageDataID{}
-}
-
-func (m *MessageDataID) String() string {
-	return proto.CompactTextString(m)
-}
-
-func (*MessageDataID) ProtoMessage() {
-
 }

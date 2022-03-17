@@ -79,5 +79,4 @@ func TestReadLatestMsg(t *testing.T) {
 	assert.Equal(t, lastedMsg.ID().LedgerID(), messageId.LedgerID())
 	assert.Equal(t, lastedMsg.ID().EntryID(), messageId.EntryID())
 	assert.Equal(t, lastedMsg.ID().PartitionIdx(), messageId.PartitionIdx())
-
 }
