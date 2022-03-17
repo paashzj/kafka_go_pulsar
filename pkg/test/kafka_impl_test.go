@@ -183,6 +183,7 @@ func TestFetchAndCommitOffset(t *testing.T) {
 	offsetFetchPartitionResp, err := k.OffsetFetch(&addr, topic, &offsetFetchReq)
 	assert.Nil(t, err)
 	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+
 	// fetch partition
 	fetchPartitionReq := service.FetchPartitionReq{
 		PartitionId: partition,

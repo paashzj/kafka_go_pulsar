@@ -24,15 +24,10 @@ import (
 )
 
 func convOffset(message pulsar.Message, continuousOffset bool) int64 {
-	messageId := message.ID()
 	if continuousOffset {
 		// TODO get continuous offset
 		return 0
 	}
-	return ConvertOffset(messageId)
-}
-
-func ConvertOffset(messageId pulsar.MessageID) int64 {
-	offset, _ := strconv.Atoi(fmt.Sprint(messageId.LedgerID()) + fmt.Sprint(messageId.EntryID()) + fmt.Sprint(messageId.PartitionIdx()))
+	offset, _ := strconv.Atoi(fmt.Sprint(message.ID().LedgerID()) + fmt.Sprint(message.ID().EntryID()) + fmt.Sprint(message.ID().PartitionIdx()))
 	return int64(offset)
 }

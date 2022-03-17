@@ -38,19 +38,19 @@ func ReadEarliestMsg(topic string, maxWaitMs int, partition int, pulsarClient pu
 
 func readNextMsg(operation pulsar.ReaderOptions, maxWaitMs int, pulsarClient pulsar.Client) pulsar.Message {
 	receiveTime := make(chan bool)
-	read, err := pulsarClient.CreateReader(operation)
+	reader, err := pulsarClient.CreateReader(operation)
 	if err != nil {
 		logrus.Warnf("create pulsar lasted read failed. topic: %s, err: %s", operation.Topic, err)
 		return nil
 	}
-	defer read.Close()
+	defer reader.Close()
 	for {
 		go func() {
 			time.Sleep(time.Duration(maxWaitMs) * time.Millisecond)
 			receiveTime <- true
 		}()
-		if read.HasNext() {
-			message, err := read.Next(context.Background())
+		if reader.HasNext() {
+			message, err := reader.Next(context.Background())
 			if err != nil {
 				logrus.Errorf("get message failed. topic: %s", operation.Topic)
 				break
