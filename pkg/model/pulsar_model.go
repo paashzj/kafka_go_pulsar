@@ -15,20 +15,32 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package constant
+package model
 
-const (
-	DefaultOffset = int64(0)
-	UnknownOffset = int64(-1)
+import "github.com/gogo/protobuf/proto"
 
-	TimeEarliest = int64(-2)
-	TimeLasted   = int64(-1)
+type MessageID struct {
+	LedgerID     int64
+	EntryID      int64
+	BatchIdx     int32
+	PartitionIdx int32
+}
 
-	OffsetReaderEarliestName = "OFFSET_LIST_EARLIEST"
+type MessageDataID struct {
+	LedgerID     *uint64 `protobuf:"varint,1,req,name=ledgerId" json:"ledgerId,omitempty"`
+	EntryID      *uint64 `protobuf:"varint,2,req,name=entryId" json:"entryId,omitempty"`
+	BatchIdx     *int32  `protobuf:"varint,4,opt,name=batch_index,json=batchIndex,def=-1" json:"batch_index,omitempty"`
+	PartitionIdx *int32  `protobuf:"varint,3,opt,name=partition,def=-1" json:"partition,omitempty"`
+}
 
-	PartitionSuffixFormat = "-partition-%d"
-)
+func (m *MessageDataID) Reset() {
+	*m = MessageDataID{}
+}
 
-var (
-	LastMsgIdUrl = "/admin/v2/persistent/%s/%s/%s/lastMessageId"
-)
+func (m *MessageDataID) String() string {
+	return proto.CompactTextString(m)
+}
+
+func (*MessageDataID) ProtoMessage() {
+
+}

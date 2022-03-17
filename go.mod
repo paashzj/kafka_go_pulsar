@@ -6,6 +6,7 @@ require (
 	github.com/apache/pulsar-client-go v0.8.1
 	github.com/docker/docker v20.10.13+incompatible
 	github.com/docker/go-connections v0.4.0
+	github.com/gogo/protobuf v1.3.2
 	github.com/google/uuid v1.3.0
 	github.com/paashzj/kafka_go v0.0.6-0.20220316090855-0cbcac128ec9
 	github.com/segmentio/kafka-go v0.4.26
@@ -30,7 +31,6 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/dvsekhvalnov/jose2go v1.5.0 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
