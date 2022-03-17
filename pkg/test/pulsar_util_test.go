@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/apache/pulsar-client-go/pulsar"
 	"github.com/google/uuid"
+	"github.com/paashzj/kafka_go_pulsar/pkg/constant"
 	"github.com/paashzj/kafka_go_pulsar/pkg/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
@@ -30,7 +31,7 @@ import (
 
 func TestReadEarliestMsg(t *testing.T) {
 	topic := uuid.New().String()
-	pulsarTopic := defaultTopicType + topicPrefix + topic + fmt.Sprintf(utils.PartitionSuffixFormat, partition)
+	pulsarTopic := defaultTopicType + topicPrefix + topic + fmt.Sprintf(constant.PartitionSuffixFormat, partition)
 	setupPulsar()
 	producer, err := pulsarClient.CreateProducer(pulsar.ProducerOptions{Topic: pulsarTopic})
 	assert.Nil(t, err)
@@ -44,5 +45,4 @@ func TestReadEarliestMsg(t *testing.T) {
 	assert.Equal(t, msg.ID().LedgerID(), messageId.LedgerID())
 	assert.Equal(t, msg.ID().EntryID(), messageId.EntryID())
 	assert.Equal(t, msg.ID().PartitionIdx(), messageId.PartitionIdx())
-
 }

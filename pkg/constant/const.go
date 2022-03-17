@@ -15,14 +15,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package utils
+package constant
 
 const (
 	DefaultOffset = int64(0)
-	Earliest      = int64(-2)
-	Lasted        = int64(-1)
-
 	UnknownOffset = int64(-1)
+	
+	TimeEarliest = int64(-2)
+	TimeLasted   = int64(-1)
 
 	OffsetReaderEarliestName = "OFFSET_LIST_EARLIEST"
 

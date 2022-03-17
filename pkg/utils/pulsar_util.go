@@ -21,14 +21,15 @@ import (
 	"context"
 	"fmt"
 	"github.com/apache/pulsar-client-go/pulsar"
+	"github.com/paashzj/kafka_go_pulsar/pkg/constant"
 	"github.com/sirupsen/logrus"
 	"time"
 )
 
 func ReadEarliestMsg(topic string, maxWaitMs int, partition int, pulsarClient pulsar.Client) pulsar.Message {
 	readerOptions := pulsar.ReaderOptions{
-		Topic:          topic + fmt.Sprintf(PartitionSuffixFormat, partition),
-		Name:           OffsetReaderEarliestName,
+		Topic:          topic + fmt.Sprintf(constant.PartitionSuffixFormat, partition),
+		Name:           constant.OffsetReaderEarliestName,
 		StartMessageID: pulsar.EarliestMessageID(),
 	}
 

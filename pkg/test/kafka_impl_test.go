@@ -23,8 +23,8 @@ import (
 	"github.com/apache/pulsar-client-go/pulsar"
 	"github.com/google/uuid"
 	"github.com/paashzj/kafka_go/pkg/service"
+	"github.com/paashzj/kafka_go_pulsar/pkg/constant"
 	"github.com/paashzj/kafka_go_pulsar/pkg/kafsar"
-	"github.com/paashzj/kafka_go_pulsar/pkg/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -129,7 +129,7 @@ func TestFetchPartitionNoMessage(t *testing.T) {
 	_, err = k.FetchPartition(&addr, topic, &fetchPartitionReq)
 	assert.Nil(t, err)
 
-	url := "http://localhost:8080/admin/v2/persistent/public/default/" + pulsarTopic + fmt.Sprintf(utils.PartitionSuffixFormat, partition) + "/subscriptions"
+	url := "http://localhost:8080/admin/v2/persistent/public/default/" + pulsarTopic + fmt.Sprintf(constant.PartitionSuffixFormat, partition) + "/subscriptions"
 	request, err := HttpGetRequest(url)
 	assert.Nil(t, err)
 	assert.Contains(t, string(request), subscriptionPrefix)
@@ -138,7 +138,7 @@ func TestFetchPartitionNoMessage(t *testing.T) {
 func TestFetchAndCommitOffset(t *testing.T) {
 	topic := uuid.New().String()
 	groupId := uuid.New().String()
-	pulsarTopic := defaultTopicType + topicPrefix + topic + fmt.Sprintf(utils.PartitionSuffixFormat, partition)
+	pulsarTopic := defaultTopicType + topicPrefix + topic + fmt.Sprintf(constant.PartitionSuffixFormat, partition)
 	setupPulsar()
 	k := kafsar.NewKafsar(kafsarServer, config)
 	err := k.InitGroupCoordinator()
@@ -183,18 +183,6 @@ func TestFetchAndCommitOffset(t *testing.T) {
 	offsetFetchPartitionResp, err := k.OffsetFetch(&addr, topic, &offsetFetchReq)
 	assert.Nil(t, err)
 	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
-
-	// offset list
-	listOffsetsPartitionReq := service.ListOffsetsPartitionReq{
-		ClientId:    clientId,
-		PartitionId: partition,
-		Time:        -2,
-	}
-
-	listPartition, err := k.OffsetListPartition(&addr, topic, &listOffsetsPartitionReq)
-	assert.Nil(t, err)
-	assert.Equal(t, listPartition.Offset, kafsar.ConvertOffset(messageId))
-
 	// fetch partition
 	fetchPartitionReq := service.FetchPartitionReq{
 		PartitionId: partition,
