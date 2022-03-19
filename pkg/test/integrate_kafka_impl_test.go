@@ -133,6 +133,9 @@ func TestFetchAndCommitOffset(t *testing.T) {
 	pulsarTopic := defaultTopicType + topicPrefix + topic
 	setupPulsar()
 	k, err := kafsar.NewKafsar(kafsarServer, config)
+	if err != nil {
+		t.Fatal(err)
+	}
 	err = k.InitGroupCoordinator()
 	assert.Nil(t, err)
 	producer, err := pulsarClient.CreateProducer(pulsar.ProducerOptions{Topic: pulsarTopic})
