@@ -38,30 +38,43 @@ func TestOffsetManager(t *testing.T) {
 	assert.Nil(t, err)
 	offsetConsumer, err := kafsar.GetOffsetConsumer(pulsarClient, config)
 	assert.Nil(t, err)
-	manage := kafsar.NewOffsetManager(offsetProducer, offsetConsumer)
+	manager := kafsar.NewOffsetManager(offsetProducer, offsetConsumer)
+	defer manager.Close()
 
 	producer, err := pulsarClient.CreateProducer(pulsar.ProducerOptions{Topic: pulsarTopic})
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	message := pulsar.ProducerMessage{Value: testContent}
 	messageId, err := producer.Send(context.TODO(), &message)
 	logrus.Infof("send msg to pulsar %s", messageId)
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	rand.Seed(time.Now().Unix())
 	offset := rand.Int63()
 	messagePair := kafsar.MessageIdPair{
 		MessageId: messageId,
 		Offset:    offset,
 	}
-	err = manage.CommitOffset(username, topic, groupId, partition, messagePair)
-	assert.Nil(t, err)
+	err = manager.CommitOffset(username, topic, groupId, partition, messagePair)
+	if err != nil {
+		t.Fatal(err)
+	}
 	time.Sleep(10 * time.Second)
-	acquireOffset, flag := manage.AcquireOffset(username, topic, groupId, partition)
-	assert.True(t, flag)
+	acquireOffset, flag := manager.AcquireOffset(username, topic, groupId, partition)
+	if !flag {
+		t.Fatal("acquire offset not exists")
+	}
 	assert.Equal(t, acquireOffset.Offset, offset)
-	_, flag = manage.RemoveOffset(username, topic, groupId, partition)
-	assert.True(t, flag)
+	_, flag = manager.RemoveOffset(username, topic, groupId, partition)
+	if !flag {
+		t.Fatal("remove offset not exist")
+	}
 	time.Sleep(10 * time.Second)
-	acquireOffset, flag = manage.AcquireOffset(username, topic, groupId, partition)
-	assert.True(t, flag)
+	acquireOffset, flag = manager.AcquireOffset(username, topic, groupId, partition)
+	if flag {
+		t.Fatal("acquire offset exists")
+	}
 	assert.Nil(t, acquireOffset.MessageId)
 }
