@@ -101,6 +101,9 @@ func GetPulsarClient(config *Config) pulsar.Client {
 
 func GetOffsetConsumer(client pulsar.Client, config *Config) (pulsar.Consumer, error) {
 	newUUID, err := uuid.NewUUID()
+	if err != nil {
+		return nil, err
+	}
 	consumer, err := client.Subscribe(pulsar.ConsumerOptions{
 		Topic:            getOffsetTopic(config),
 		Type:             pulsar.Failover,
