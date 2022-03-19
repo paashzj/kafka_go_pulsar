@@ -21,11 +21,9 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/apache/pulsar-client-go/pulsar"
-	"github.com/paashzj/kafka_go_pulsar/pkg/constant"
 	"github.com/paashzj/kafka_go_pulsar/pkg/model"
 	"github.com/sirupsen/logrus"
 	"strconv"
-	"strings"
 	"sync"
 )
 
@@ -48,16 +46,7 @@ func NewOffsetManager(producer pulsar.Producer, consumer pulsar.Consumer) Offset
 
 func (o *OffsetManagerImpl) startOffsetConsumer() {
 	go func() {
-		for {
-			receive, err := o.consumer.Receive(context.TODO())
-			if err != nil {
-				if strings.Contains(err.Error(), constant.ErrorMsgConsumerClosed) {
-					logrus.Errorf("consumer already closed.")
-					return
-				}
-				logrus.Error("receive error is ", err)
-				continue
-			}
+		for receive := range o.consumer.Chan() {
 			logrus.Infof("receive key: %s, msg: %s", receive.Key(), string(receive.Payload()))
 			payload := receive.Payload()
 			if len(payload) == 0 {
@@ -68,7 +57,7 @@ func (o *OffsetManagerImpl) startOffsetConsumer() {
 				continue
 			}
 			var msgIdData model.MessageIdData
-			err = json.Unmarshal(payload, &msgIdData)
+			err := json.Unmarshal(payload, &msgIdData)
 			if err != nil {
 				logrus.Errorf("unmarshal failed. key: %s, topic: %s", receive.Key(), receive.Topic())
 				continue

@@ -41,6 +41,9 @@ func TestOffsetManager(t *testing.T) {
 	manager := kafsar.NewOffsetManager(offsetProducer, offsetConsumer)
 	defer manager.Close()
 
+	// wait for manager start
+	time.Sleep(10 * time.Second)
+
 	producer, err := pulsarClient.CreateProducer(pulsar.ProducerOptions{Topic: pulsarTopic})
 	if err != nil {
 		t.Fatal(err)
