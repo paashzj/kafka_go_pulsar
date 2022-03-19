@@ -52,7 +52,7 @@ func (o *OffsetManagerImpl) startOffsetConsumer() {
 			if len(payload) == 0 {
 				logrus.Errorf("payload length is 0. key: %s", receive.Key())
 				o.mutex.Lock()
-				o.offsetMap[receive.Key()] = MessageIdPair{}
+				delete(o.offsetMap, receive.Key())
 				o.mutex.Unlock()
 				continue
 			}
@@ -68,7 +68,7 @@ func (o *OffsetManagerImpl) startOffsetConsumer() {
 				logrus.Errorf("deserialize message id failed. key: %s, err: %s", receive.Key(), err)
 				continue
 			}
-			logrus.Info("pair is:", receive.Key()+"   ", msgId, msgIdData.Offset)
+			logrus.Infof("received key %s offset %d", receive.Key(), msgIdData.Offset)
 			pair := MessageIdPair{
 				MessageId: msgId,
 				Offset:    msgIdData.Offset,
@@ -95,29 +95,23 @@ func (o *OffsetManagerImpl) CommitOffset(username, kafkaTopic, groupId string, p
 	message.Key = key
 	_, err = o.producer.Send(context.TODO(), &message)
 	if err != nil {
-		logrus.Errorf("send msg failed. kafkaTopic: %s, err: %s", kafkaTopic, err)
+		logrus.Errorf("commit offset failed. kafkaTopic: %s, offset: %d, err: %s", kafkaTopic, pair.Offset, err)
 		return err
 	}
-	logrus.Infof("send msg success. kafkaTopic: %s", kafkaTopic)
+	logrus.Infof("kafkaTopic: %s commit offset %d success", kafkaTopic, pair.Offset)
 	return nil
 }
 
 func (o *OffsetManagerImpl) AcquireOffset(username, kafkaTopic, groupId string, partition int) (MessageIdPair, bool) {
 	key := o.generateKey(username, kafkaTopic, groupId, partition)
-	logrus.Infof("begin get key: %s", key)
 	o.mutex.RLock()
 	pair, exist := o.offsetMap[key]
-	logrus.Info("exist:", exist, pair)
-	o.mutex.RUnlock()
-	if exist {
-		return pair, true
-	}
-	return MessageIdPair{}, false
+	return pair, exist
 }
 
 func (o *OffsetManagerImpl) RemoveOffset(username, kafkaTopic, groupId string, partition int) (MessageIdPair, bool) {
 	key := o.generateKey(username, kafkaTopic, groupId, partition)
-	logrus.Infof("begin remove key: %s", key)
+	logrus.Infof("begin remove offset key: %s", key)
 	message := pulsar.ProducerMessage{}
 	message.Key = key
 	_, err := o.producer.Send(context.TODO(), &message)
@@ -125,7 +119,7 @@ func (o *OffsetManagerImpl) RemoveOffset(username, kafkaTopic, groupId string, p
 		logrus.Errorf("send msg failed. kafkaTopic: %s, err: %s", kafkaTopic, err)
 		return MessageIdPair{}, false
 	}
-	logrus.Infof("send msg success. kafkaTopic: %s", kafkaTopic)
+	logrus.Infof("kafkaTopic: %s remove offset success", kafkaTopic)
 	return MessageIdPair{}, true
 }
 

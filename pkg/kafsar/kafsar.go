@@ -20,6 +20,7 @@ package kafsar
 import (
 	"fmt"
 	"github.com/apache/pulsar-client-go/pulsar"
+	"github.com/google/uuid"
 	"github.com/paashzj/kafka_go/pkg/kafka"
 	"github.com/paashzj/kafka_go_pulsar/pkg/constant"
 	"github.com/sirupsen/logrus"
@@ -99,10 +100,11 @@ func GetPulsarClient(config *Config) pulsar.Client {
 }
 
 func GetOffsetConsumer(client pulsar.Client, config *Config) (pulsar.Consumer, error) {
+	newUUID, err := uuid.NewUUID()
 	consumer, err := client.Subscribe(pulsar.ConsumerOptions{
 		Topic:            getOffsetTopic(config),
-		Type:             pulsar.Shared,
-		SubscriptionName: constant.OffsetCommitName,
+		Type:             pulsar.Failover,
+		SubscriptionName: newUUID.String(),
 	})
 	if err != nil {
 		logrus.Errorf("subscribe consumer failed. topic: %s, err: %s", getOffsetTopic(config), err)

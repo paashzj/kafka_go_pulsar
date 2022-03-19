@@ -27,7 +27,6 @@ const (
 	TimeLasted   = int64(-1)
 
 	OffsetReaderEarliestName = "OFFSET_LIST_EARLIEST"
-	OffsetCommitName         = "OFFSET_Commit"
 
 	DefaultProducerSendTimeout = 1 * time.Second
 	DefaultMaxPendingMs        = 100
