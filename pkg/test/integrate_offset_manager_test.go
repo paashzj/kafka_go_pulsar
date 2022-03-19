@@ -42,7 +42,7 @@ func TestOffsetManager(t *testing.T) {
 	defer manager.Close()
 
 	// wait for manager start
-	time.Sleep(10 * time.Second)
+	time.Sleep(3 * time.Second)
 
 	producer, err := pulsarClient.CreateProducer(pulsar.ProducerOptions{Topic: pulsarTopic})
 	if err != nil {
@@ -64,7 +64,7 @@ func TestOffsetManager(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(10 * time.Second)
+	time.Sleep(3 * time.Second)
 	acquireOffset, flag := manager.AcquireOffset(username, topic, groupId, partition)
 	if !flag {
 		t.Fatal("acquire offset not exists")
@@ -74,7 +74,7 @@ func TestOffsetManager(t *testing.T) {
 	if !flag {
 		t.Fatal("remove offset not exist")
 	}
-	time.Sleep(10 * time.Second)
+	time.Sleep(3 * time.Second)
 	acquireOffset, flag = manager.AcquireOffset(username, topic, groupId, partition)
 	if flag {
 		t.Fatal("acquire offset exists")

@@ -106,6 +106,7 @@ func (o *OffsetManagerImpl) AcquireOffset(username, kafkaTopic, groupId string, 
 	key := o.generateKey(username, kafkaTopic, groupId, partition)
 	o.mutex.RLock()
 	pair, exist := o.offsetMap[key]
+	o.mutex.RUnlock()
 	return pair, exist
 }
 
