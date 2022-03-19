@@ -17,6 +17,8 @@
 
 package constant
 
+import "time"
+
 const (
 	DefaultOffset = int64(0)
 	UnknownOffset = int64(-1)
@@ -25,10 +27,18 @@ const (
 	TimeLasted   = int64(-1)
 
 	OffsetReaderEarliestName = "OFFSET_LIST_EARLIEST"
+	OffsetCommitName         = "OFFSET_Commit"
+
+	DefaultProducerSendTimeout = 1 * time.Second
+	DefaultMaxPendingMs        = 100
 
 	PartitionSuffixFormat = "-partition-%d"
 )
 
 const (
 	LastMsgIdUrl = "/admin/v2/persistent/%s/%s/%s/lastMessageId"
+)
+
+const (
+	ErrorMsgConsumerClosed = "consumer closed"
 )
