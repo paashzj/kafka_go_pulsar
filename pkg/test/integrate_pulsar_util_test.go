@@ -31,7 +31,7 @@ import (
 
 func TestReadEarliestMsg(t *testing.T) {
 	topic := uuid.New().String()
-	pulsarTopic := defaultTopicType + topicPrefix + topic + fmt.Sprintf(constant.PartitionSuffixFormat, partition)
+	pulsarTopic := utils.PartitionedTopic(defaultTopicType+topicPrefix+topic, partition)
 	setupPulsar()
 	producer, err := pulsarClient.CreateProducer(pulsar.ProducerOptions{Topic: pulsarTopic})
 	assert.Nil(t, err)
@@ -39,8 +39,8 @@ func TestReadEarliestMsg(t *testing.T) {
 	messageId, err := producer.Send(context.TODO(), &message)
 	logrus.Infof("send msg to pulsar %s", messageId)
 	assert.Nil(t, err)
-	readTopic := defaultTopicType + topicPrefix + topic
-	msg := utils.ReadEarliestMsg(readTopic, maxFetchWaitMs, partition, pulsarClient)
+	readTopic := utils.PartitionedTopic(defaultTopicType+topicPrefix+topic, partition)
+	msg := utils.ReadEarliestMsg(readTopic, maxFetchWaitMs, pulsarClient)
 	assert.NotNil(t, msg)
 	assert.Equal(t, msg.ID().LedgerID(), messageId.LedgerID())
 	assert.Equal(t, msg.ID().EntryID(), messageId.EntryID())
@@ -74,7 +74,7 @@ func TestReadLatestMsg(t *testing.T) {
 	logrus.Infof("msgId : %s", string(msg))
 	assert.Nil(t, err)
 	assert.NotNil(t, msg)
-	lastedMsg := utils.ReadLastedMsg(readTopic, maxFetchWaitMs, partition, msg, pulsarClient)
+	lastedMsg := utils.ReadLastedMsg(readTopic, maxFetchWaitMs, msg, pulsarClient)
 	assert.NotNil(t, lastedMsg)
 	assert.Equal(t, lastedMsg.ID().LedgerID(), messageId.LedgerID())
 	assert.Equal(t, lastedMsg.ID().EntryID(), messageId.EntryID())
