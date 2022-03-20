@@ -146,16 +146,24 @@ func TestHeartBeatRebalanceInProgress(t *testing.T) {
 		groupStatus: PreparingRebalance,
 	}
 
-	beat := groupCoordinator.HandleHeartBeat(groupId)
-	assert.Equal(t, beat.ErrorCode, service.REBALANCE_IN_PROGRESS)
-	beat = groupCoordinator.HandleHeartBeat("")
-	assert.Equal(t, beat.ErrorCode, service.INVALID_GROUP_ID)
-	beat = groupCoordinator.HandleHeartBeat("no_group_id")
-	assert.Equal(t, beat.ErrorCode, service.INVALID_GROUP_ID)
+	resp := groupCoordinator.HandleHeartBeat(groupId)
+	assert.Equal(t, resp.ErrorCode, service.REBALANCE_IN_PROGRESS)
+}
+
+func TestHeartBeatInvalidGroupId(t *testing.T) {
+	groupCoordinator := NewGroupCoordinator(PulsarConfig{}, kafsarConfig, nil)
+	resp := groupCoordinator.HandleHeartBeat("")
+	assert.Equal(t, resp.ErrorCode, service.INVALID_GROUP_ID)
+	resp = groupCoordinator.HandleHeartBeat("no_group_id")
+	assert.Equal(t, resp.ErrorCode, service.INVALID_GROUP_ID)
+}
+
+func TestHeartBeatNone(t *testing.T) {
+	groupCoordinator := NewGroupCoordinator(PulsarConfig{}, kafsarConfig, nil)
 	groupCoordinator.groupManager[groupId] = &Group{
 		groupId:     groupId,
 		groupStatus: Empty,
 	}
-	beat = groupCoordinator.HandleHeartBeat(groupId)
-	assert.Equal(t, beat.ErrorCode, service.NONE)
+	resp := groupCoordinator.HandleHeartBeat(groupId)
+	assert.Equal(t, resp.ErrorCode, service.NONE)
 }
