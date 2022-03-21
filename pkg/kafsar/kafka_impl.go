@@ -25,7 +25,7 @@ import (
 	"github.com/paashzj/kafka_go/pkg/service"
 	"github.com/paashzj/kafka_go_pulsar/pkg/constant"
 	"github.com/paashzj/kafka_go_pulsar/pkg/utils"
-	errors2 "github.com/pkg/errors"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"net"
 	"sync"
@@ -71,7 +71,7 @@ func NewKafsar(impl Server, config *Config) (*KafkaImpl, error) {
 	} else if kafka.kafsarConfig.GroupCoordinatorType == Standalone {
 		kafka.groupCoordinator = NewGroupCoordinatorStandalone(kafka.pulsarConfig, kafka.kafsarConfig, kafka.pulsarClient)
 	} else {
-		return nil, errors2.Errorf("unexpect GroupCoordinatorType: %v", kafka.kafsarConfig.GroupCoordinatorType)
+		return nil, errors.Errorf("unexpect GroupCoordinatorType: %v", kafka.kafsarConfig.GroupCoordinatorType)
 	}
 	kafka.readerManager = make(map[string]*ReaderMetadata)
 	kafka.userInfoManager = make(map[string]*userInfo)
