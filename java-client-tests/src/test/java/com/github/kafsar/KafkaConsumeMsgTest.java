@@ -32,8 +32,11 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.pulsar.client.api.MessageId;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.ProducerBuilder;
+import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.pulsar.client.api.Schema;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -46,6 +49,11 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class KafkaConsumeMsgTest extends BaseTest {
+
+    @BeforeAll
+    public void beforeAll() throws PulsarClientException {
+        super.init();
+    }
 
     @Test
     @Timeout(60)
@@ -220,6 +228,11 @@ public class KafkaConsumeMsgTest extends BaseTest {
                 break;
             }
         }
+    }
+
+    @AfterAll
+    public void afterAll() throws PulsarClientException {
+        super.close();
     }
 
 }
