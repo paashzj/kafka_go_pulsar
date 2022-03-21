@@ -26,14 +26,12 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.pulsar.client.api.MessageId;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.ProducerBuilder;
-import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.Schema;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -42,21 +40,17 @@ import org.junit.jupiter.api.Timeout;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class KafkaConsumeMsgTest {
+public class KafkaConsumeMsgTest extends BaseTest {
 
     @Test
     @Timeout(60)
     public void consumeEarliestMsgSuccess() throws Exception {
         String topic = UUID.randomUUID().toString();
-        PulsarClient pulsarClient = PulsarClient.builder()
-                .serviceUrl(PulsarConst.TCP_URL)
-                .build();
         ProducerBuilder<String> producerBuilder = pulsarClient.newProducer(Schema.STRING).enableBatching(false);
         Producer<String> producer = producerBuilder.topic(topic).create();
         String msg = UUID.randomUUID().toString();
@@ -93,9 +87,6 @@ public class KafkaConsumeMsgTest {
     @Timeout(60)
     public void consumeLatestMsgSuccess() throws Exception {
         String topic = UUID.randomUUID().toString();
-        PulsarClient pulsarClient = PulsarClient.builder()
-                .serviceUrl(PulsarConst.TCP_URL)
-                .build();
         ProducerBuilder<String> producerBuilder = pulsarClient.newProducer(Schema.STRING).enableBatching(false);
         Producer<String> producer = producerBuilder.topic(topic).create();
         String msg = UUID.randomUUID().toString();
@@ -138,9 +129,6 @@ public class KafkaConsumeMsgTest {
     @Timeout(60)
     public void retryConsumeLatestMsgAfterClose() throws Exception {
         String topic = UUID.randomUUID().toString();
-        PulsarClient pulsarClient = PulsarClient.builder()
-                .serviceUrl(PulsarConst.TCP_URL)
-                .build();
         ProducerBuilder<String> producerBuilder = pulsarClient.newProducer(Schema.STRING).enableBatching(false);
         Producer<String> producer = producerBuilder.topic(topic + "-partition-0").create();
         String msg = UUID.randomUUID().toString();
@@ -198,9 +186,6 @@ public class KafkaConsumeMsgTest {
     @Timeout(60)
     public void multiConsumerTest() throws Exception {
         String topic = UUID.randomUUID().toString();
-        PulsarClient pulsarClient = PulsarClient.builder()
-                .serviceUrl(PulsarConst.TCP_URL)
-                .build();
         ProducerBuilder<String> producerBuilder = pulsarClient.newProducer(Schema.STRING).enableBatching(false);
         Producer<String> producer = producerBuilder.topic(topic).create();
         String msg = UUID.randomUUID().toString();
