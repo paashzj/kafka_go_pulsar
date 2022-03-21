@@ -341,6 +341,8 @@ func (gcs *GroupCoordinatorStandalone) addMemberAndRebalance(group *Group, clien
 
 func (gcs *GroupCoordinatorStandalone) updateMemberAndRebalance(group *Group, clientId, memberId, protocolType string, protocols []*service.GroupProtocol, rebalanceDelayMs int) {
 	gcs.prepareRebalance(group)
+	// todo process err
+	//nolint
 	gcs.doRebalance(group, rebalanceDelayMs)
 }
 
