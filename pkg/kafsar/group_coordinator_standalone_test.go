@@ -85,7 +85,6 @@ func TestGroupRebalance(t *testing.T) {
 	go func() {
 		resp, err := groupCoordinator.HandleJoinGroup(groupId, memberId, clientId, protocolType, sessionTimeoutMs, protocols)
 		assert.Nil(t, err)
-
 		assert.Equal(t, service.NONE, resp.ErrorCode)
 		group, err := groupCoordinator.GetGroup(groupId)
 		assert.Nil(t, err)
@@ -307,7 +306,6 @@ func TestMultiConsumerLeaveGroup(t *testing.T) {
 	assert.Equal(t, service.NONE, resp2.ErrorCode)
 	assert.Equal(t, resp2.MemberId, group.leader)
 }
-
 
 func TestHeartBeatRebalanceInProgress(t *testing.T) {
 	groupCoordinator := NewGroupCoordinatorStandalone(PulsarConfig{}, kafsarConfig, nil)
