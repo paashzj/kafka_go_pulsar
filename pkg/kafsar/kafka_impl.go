@@ -445,8 +445,42 @@ func (k *KafkaImpl) consumePartitionedTopic(user *userInfo, kafkaTopic string, p
 }
 
 func (k *KafkaImpl) OffsetLeaderEpoch(addr net.Addr, topic string, req *service.OffsetLeaderEpochPartitionReq) (*service.OffsetLeaderEpochPartitionResp, error) {
-	//TODO implement me
-	panic("implement me")
+	user, exist := k.userInfoManager[addr.String()]
+	if !exist {
+		logrus.Errorf("offset fetch failed when get userinfo by addr %s, kafka topic: %s", addr.String(), topic)
+		return &service.OffsetLeaderEpochPartitionResp{
+			ErrorCode: int16(service.UNKNOWN_SERVER_ERROR),
+		}, nil
+	}
+	logrus.Infof("%s offset leader epoch topic: %s, partition: %d", addr.String(), topic, req.PartitionId)
+	partitionedTopic, err := k.consumePartitionedTopic(user, topic, req.PartitionId)
+	if err != nil {
+		logrus.Errorf("get partitioned topic failed. topic: %s", topic)
+		return &service.OffsetLeaderEpochPartitionResp{
+			ErrorCode: int16(service.UNKNOWN_SERVER_ERROR),
+		}, nil
+	}
+	msgByte, err := utils.GetLatestMsgId(partitionedTopic, k.getPulsarHttpUrl())
+	if err != nil {
+		logrus.Errorf("get last msgId failed. topic: %s", topic)
+		return &service.OffsetLeaderEpochPartitionResp{
+			ErrorCode: int16(service.UNKNOWN_SERVER_ERROR),
+		}, nil
+	}
+	msg, err := utils.ReadLastedMsg(partitionedTopic, k.kafsarConfig.MaxFetchWaitMs, msgByte, k.pulsarClient)
+	if err != nil {
+		logrus.Errorf("get last msgId failed. topic: %s", topic)
+		return &service.OffsetLeaderEpochPartitionResp{
+			ErrorCode: int16(service.UNKNOWN_SERVER_ERROR),
+		}, nil
+	}
+	offset := convOffset(msg, k.kafsarConfig.ContinuousOffset)
+	return &service.OffsetLeaderEpochPartitionResp{
+		ErrorCode:   int16(service.NONE),
+		PartitionId: req.PartitionId,
+		LeaderEpoch: req.LeaderEpoch,
+		Offset:      offset,
+	}, nil
 }
 
 func (k *KafkaImpl) SaslAuth(addr net.Addr, req service.SaslReq) (bool, service.ErrorCode) {

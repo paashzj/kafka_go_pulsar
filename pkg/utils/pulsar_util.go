@@ -64,7 +64,7 @@ func GetLatestMsgId(partitionedTopic, addr string) (msg []byte, err error) {
 
 func ReadLastedMsg(partitionedTopic string, maxWaitMs int, msgIdBytes []byte, pulsarClient pulsar.Client) (pulsar.Message, error) {
 	var msgId pulsar.MessageID
-	bytes, err := generateMsgBytes(msgIdBytes)
+	bytes, err := GenerateMsgBytes(msgIdBytes)
 	if err != nil {
 		logrus.Errorf("genrate msg bytes failed. topic: %s, err: %s", partitionedTopic, err)
 		return nil, err
@@ -130,7 +130,7 @@ func CalculateMsgLength(message pulsar.Message) int {
 	return length
 }
 
-func generateMsgBytes(msgBytes []byte) ([]byte, error) {
+func GenerateMsgBytes(msgBytes []byte) ([]byte, error) {
 	var msgId model.MessageID
 	err := json.Unmarshal(msgBytes, &msgId)
 	if err != nil {
