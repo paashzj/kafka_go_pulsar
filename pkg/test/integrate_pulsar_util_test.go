@@ -31,6 +31,8 @@ func TestReadEarliestMsg(t *testing.T) {
 	topic := uuid.New().String()
 	partitionedTopic := utils.PartitionedTopic(DefaultTopicType+TopicPrefix+topic, partition)
 	SetupPulsar()
+	pulsarClient := NewPulsarClient()
+	defer pulsarClient.Close()
 	producer, err := pulsarClient.CreateProducer(pulsar.ProducerOptions{Topic: partitionedTopic})
 	if err != nil {
 		t.Fatal(err)
@@ -55,6 +57,8 @@ func TestReadLatestMsg(t *testing.T) {
 	topic := uuid.New().String()
 	partitionedTopic := utils.PartitionedTopic(DefaultTopicType+TopicPrefix+topic, partition)
 	SetupPulsar()
+	pulsarClient := NewPulsarClient()
+	defer pulsarClient.Close()
 	producer, err := pulsarClient.CreateProducer(pulsar.ProducerOptions{Topic: partitionedTopic})
 	if err != nil {
 		t.Fatal(err)
