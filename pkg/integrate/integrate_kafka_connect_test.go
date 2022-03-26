@@ -20,6 +20,7 @@ package integrate
 import (
 	"context"
 	"fmt"
+	"github.com/paashzj/kafka_go_pulsar/pkg/kafsar"
 	"github.com/paashzj/kafka_go_pulsar/pkg/test"
 	"github.com/segmentio/kafka-go"
 	"github.com/stretchr/testify/assert"
@@ -29,7 +30,7 @@ import (
 
 func TestKafkaConnect(t *testing.T) {
 	test.SetupPulsar()
-	broker, port := test.SetupKafsar()
+	broker, port := kafsar.SetupKafsar()
 	defer broker.Close()
 	time.Sleep(3 * time.Second)
 	topic := "my-topic"
