@@ -15,22 +15,24 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package test
+package utils
 
 import (
 	"context"
 	"github.com/apache/pulsar-client-go/pulsar"
 	"github.com/google/uuid"
-	"github.com/paashzj/kafka_go_pulsar/pkg/utils"
+	"github.com/paashzj/kafka_go_pulsar/pkg/test"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestReadEarliestMsg(t *testing.T) {
+	testContent := "test-content"
 	topic := uuid.New().String()
-	partitionedTopic := utils.PartitionedTopic(defaultTopicType+topicPrefix+topic, partition)
-	setupPulsar()
+	partitionedTopic := PartitionedTopic(test.DefaultTopicType+test.TopicPrefix+topic, 0)
+	test.SetupPulsar()
+	pulsarClient := test.NewPulsarClient()
 	producer, err := pulsarClient.CreateProducer(pulsar.ProducerOptions{Topic: partitionedTopic})
 	if err != nil {
 		t.Fatal(err)
@@ -41,8 +43,8 @@ func TestReadEarliestMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	readTopic := utils.PartitionedTopic(defaultTopicType+topicPrefix+topic, partition)
-	msg, err := utils.ReadEarliestMsg(readTopic, maxFetchWaitMs, pulsarClient)
+	readTopic := PartitionedTopic(test.DefaultTopicType+test.TopicPrefix+topic, 0)
+	msg, err := ReadEarliestMsg(readTopic, 2000, pulsarClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,9 +54,11 @@ func TestReadEarliestMsg(t *testing.T) {
 }
 
 func TestReadLatestMsg(t *testing.T) {
+	testContent := "test-content"
 	topic := uuid.New().String()
-	partitionedTopic := utils.PartitionedTopic(defaultTopicType+topicPrefix+topic, partition)
-	setupPulsar()
+	partitionedTopic := PartitionedTopic(test.DefaultTopicType+test.TopicPrefix+topic, 0)
+	test.SetupPulsar()
+	pulsarClient := test.NewPulsarClient()
 	producer, err := pulsarClient.CreateProducer(pulsar.ProducerOptions{Topic: partitionedTopic})
 	if err != nil {
 		t.Fatal(err)
@@ -83,13 +87,13 @@ func TestReadLatestMsg(t *testing.T) {
 		t.Fatal(err)
 	}
 	logrus.Infof("send msg to pulsar %s", messageId)
-	readPartitionedTopic := utils.PartitionedTopic(defaultTopicType+topicPrefix+topic, partition)
-	msg, err := utils.GetLatestMsgId(readPartitionedTopic, pulsarHttpUrl)
+	readPartitionedTopic := PartitionedTopic(test.DefaultTopicType+test.TopicPrefix+topic, 0)
+	msg, err := GetLatestMsgId(readPartitionedTopic, test.PulsarHttpUrl)
 	if err != nil {
 		t.Fatal(err)
 	}
 	logrus.Infof("msgId : %s", string(msg))
-	lastedMsg, err := utils.ReadLastedMsg(readPartitionedTopic, maxFetchWaitMs, msg, pulsarClient)
+	lastedMsg, err := ReadLastedMsg(readPartitionedTopic, 2000, msg, pulsarClient)
 	if err != nil {
 		t.Fatal(err)
 	}
