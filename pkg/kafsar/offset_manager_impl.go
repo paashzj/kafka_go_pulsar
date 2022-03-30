@@ -125,12 +125,13 @@ func (o *OffsetManagerImpl) startOffsetConsumer(c chan bool) {
 }
 
 func (o *OffsetManagerImpl) getCurrentLatestMsg() (pulsar.Message, error) {
-	msgByte, err := utils.GetLatestMsgId(o.offsetTopic, o.pulsarHttpAddr)
+	partitionedTopic := o.offsetTopic + fmt.Sprintf(constant.PartitionSuffixFormat, 0)
+	msgByte, err := utils.GetLatestMsgId(partitionedTopic, o.pulsarHttpAddr)
 	if err != nil {
 		logrus.Errorf("get lasted msgId failed. err: %s", err)
 		return nil, err
 	}
-	msg, err := utils.ReadLastedMsg(o.offsetTopic+fmt.Sprintf(constant.PartitionSuffixFormat, 0), 500, msgByte, o.client)
+	msg, err := utils.ReadLastedMsg(partitionedTopic, 500, msgByte, o.client)
 	if err != nil {
 		logrus.Errorf("read Lasted Msg failed. err: %s", err)
 		return nil, err
