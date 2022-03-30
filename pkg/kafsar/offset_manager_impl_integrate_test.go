@@ -37,8 +37,6 @@ var (
 		PulsarNamespace: "default",
 		OffsetTopic:     "kafka_offset",
 	}
-	pulsarHttpUrl = "http://localhost:8080"
-	testUserName  = "alice"
 )
 
 func TestReadNewOffset(t *testing.T) {
@@ -50,7 +48,7 @@ func TestReadNewOffset(t *testing.T) {
 	pulsarClient := test.NewPulsarClient()
 	defer pulsarClient.Close()
 
-	manager, err := NewOffsetManager(pulsarClient, testKafsarConfig, pulsarHttpUrl)
+	manager, err := NewOffsetManager(pulsarClient, testKafsarConfig, test.PulsarHttpUrl)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -84,22 +82,22 @@ func TestReadNewOffset(t *testing.T) {
 		MessageId: messageId,
 		Offset:    offset,
 	}
-	err = manager.CommitOffset(testUserName, topic, groupId, 0, messagePair)
+	err = manager.CommitOffset("alice", topic, groupId, 0, messagePair)
 	if err != nil {
 		t.Fatal(err)
 	}
 	time.Sleep(3 * time.Second)
-	acquireOffset, flag := manager.AcquireOffset(testUserName, topic, groupId, 0)
+	acquireOffset, flag := manager.AcquireOffset("alice", topic, groupId, 0)
 	if !flag {
 		t.Fatal("acquire offset not exists")
 	}
 	assert.Equal(t, acquireOffset.Offset, offset)
-	flag = manager.RemoveOffset(testUserName, topic, groupId, 0)
+	flag = manager.RemoveOffset("alice", topic, groupId, 0)
 	if !flag {
 		t.Fatal("remove offset not exist")
 	}
 	time.Sleep(3 * time.Second)
-	acquireOffset, flag = manager.AcquireOffset(testUserName, topic, groupId, 0)
+	acquireOffset, flag = manager.AcquireOffset("alice", topic, groupId, 0)
 	if flag {
 		t.Fatal("acquire offset exists")
 	}
@@ -132,12 +130,12 @@ func TestReadOldOffset(t *testing.T) {
 		Offset:    offset,
 	}
 
-	manager, err := NewOffsetManager(pulsarClient, testKafsarConfig, pulsarHttpUrl)
+	manager, err := NewOffsetManager(pulsarClient, testKafsarConfig, test.PulsarHttpUrl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	key := manager.GenerateKey(testUserName, topic, groupId, partition)
+	key := manager.GenerateKey("alice", topic, groupId, partition)
 	data := model.MessageIdData{}
 	data.MessageId = messagePair.MessageId.Serialize()
 	data.Offset = messagePair.Offset
@@ -165,16 +163,16 @@ func TestReadOldOffset(t *testing.T) {
 	}
 	defer manager.Close()
 
-	acquireOffset, flag := manager.AcquireOffset(testUserName, topic, groupId, 0)
+	acquireOffset, flag := manager.AcquireOffset("alice", topic, groupId, 0)
 	if !flag {
 		t.Fatal("acquire offset not exists")
 	}
 	assert.Equal(t, acquireOffset.Offset, offset)
-	flag = manager.RemoveOffset(testUserName, topic, groupId, 0)
+	flag = manager.RemoveOffset("alice", topic, groupId, 0)
 	if !flag {
 		t.Fatal("remove offset not exist")
 	}
 	time.Sleep(3 * time.Second)
-	acquireOffset, flag = manager.AcquireOffset(testUserName, topic, groupId, 0)
+	acquireOffset, flag = manager.AcquireOffset("alice", topic, groupId, 0)
 	assert.False(t, flag)
 }

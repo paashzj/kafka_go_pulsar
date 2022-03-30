@@ -74,14 +74,9 @@ func (o *OffsetManagerImpl) startOffsetConsumer(c chan bool) {
 	go func() {
 		var msg pulsar.Message
 		for {
-			msgByte, err := utils.GetLatestMsgId(o.offsetTopic, o.pulsarHttpAddr)
+			var err error
+			msg, err = o.getCurrentLatestMsg()
 			if err != nil {
-				logrus.Errorf("get lasted msgId failed. err: %s", err)
-				continue
-			}
-			msg, err = utils.ReadLastedMsg(o.offsetTopic, 500, msgByte, o.client)
-			if err != nil {
-				logrus.Errorf("read Lasted Msg failed. err: %s", err)
 				continue
 			}
 			break
@@ -127,6 +122,20 @@ func (o *OffsetManagerImpl) startOffsetConsumer(c chan bool) {
 			o.checkTime(msg, publishTime, c)
 		}
 	}()
+}
+
+func (o *OffsetManagerImpl) getCurrentLatestMsg() (pulsar.Message, error) {
+	msgByte, err := utils.GetLatestMsgId(o.offsetTopic, o.pulsarHttpAddr)
+	if err != nil {
+		logrus.Errorf("get lasted msgId failed. err: %s", err)
+		return nil, err
+	}
+	msg, err := utils.ReadLastedMsg(o.offsetTopic+fmt.Sprintf(constant.PartitionSuffixFormat, 0), 500, msgByte, o.client)
+	if err != nil {
+		logrus.Errorf("read Lasted Msg failed. err: %s", err)
+		return nil, err
+	}
+	return msg, nil
 }
 
 func (o *OffsetManagerImpl) checkTime(lastMsg pulsar.Message, currentTime time.Time, c chan bool) {
@@ -222,6 +231,5 @@ func getOffsetProducer(client pulsar.Client, config KafsarConfig) (pulsar.Produc
 }
 
 func getOffsetTopic(config KafsarConfig) string {
-	partitioned := fmt.Sprintf(constant.PartitionSuffixFormat, 0)
-	return fmt.Sprintf("persistent://%s/%s/%s", config.PulsarTenant, config.PulsarNamespace, config.OffsetTopic+partitioned)
+	return fmt.Sprintf("persistent://%s/%s/%s", config.PulsarTenant, config.PulsarNamespace, config.OffsetTopic)
 }
