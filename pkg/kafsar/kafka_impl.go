@@ -205,7 +205,6 @@ OUT:
 }
 
 func (k *KafkaImpl) GroupJoin(addr net.Addr, req *service.JoinGroupReq) (*service.JoinGroupResp, error) {
-	logrus.Infof("%s joining to group: %s, memberId: %s", addr.String(), req.GroupId, req.MemberId)
 	user, exist := k.userInfoManager[addr.String()]
 	if !exist {
 		logrus.Errorf("username not found in join group: %s", req.GroupId)
@@ -215,6 +214,7 @@ func (k *KafkaImpl) GroupJoin(addr net.Addr, req *service.JoinGroupReq) (*servic
 			GenerationId: -1,
 		}, nil
 	}
+	logrus.Infof("%s joining to group: %s, memberId: %s", addr.String(), req.GroupId, req.MemberId)
 	joinGroupResp, err := k.groupCoordinator.HandleJoinGroup(user.username, req.GroupId, req.MemberId, req.ClientId, req.ProtocolType,
 		req.SessionTimeout, req.GroupProtocols)
 	if err != nil {
@@ -238,7 +238,6 @@ func (k *KafkaImpl) GroupJoin(addr net.Addr, req *service.JoinGroupReq) (*servic
 }
 
 func (k *KafkaImpl) GroupLeave(addr net.Addr, req *service.LeaveGroupReq) (*service.LeaveGroupResp, error) {
-	logrus.Infof("%s leaving group: %s, members: %+v", addr.String(), req.GroupId, req.Members)
 	user, exist := k.userInfoManager[addr.String()]
 	if !exist {
 		logrus.Errorf("username not found in join group: %s", req.GroupId)
@@ -246,6 +245,7 @@ func (k *KafkaImpl) GroupLeave(addr net.Addr, req *service.LeaveGroupReq) (*serv
 			ErrorCode: service.UNKNOWN_SERVER_ERROR,
 		}, nil
 	}
+	logrus.Infof("%s leaving group: %s, members: %+v", addr.String(), req.GroupId, req.Members)
 	leaveGroupResp, err := k.groupCoordinator.HandleLeaveGroup(user.username, req.GroupId, req.Members)
 	if err != nil {
 		logrus.Errorf("unexpected exception in leaving group: %s, error: %s", req.GroupId, err)
@@ -271,7 +271,6 @@ func (k *KafkaImpl) GroupLeave(addr net.Addr, req *service.LeaveGroupReq) (*serv
 }
 
 func (k *KafkaImpl) GroupSync(addr net.Addr, req *service.SyncGroupReq) (*service.SyncGroupResp, error) {
-	logrus.Infof("%s syncing group: %s, memberId: %s", addr.String(), req.GroupId, req.MemberId)
 	user, exist := k.userInfoManager[addr.String()]
 	if !exist {
 		logrus.Errorf("username not found in join group: %s", req.GroupId)
@@ -279,6 +278,7 @@ func (k *KafkaImpl) GroupSync(addr net.Addr, req *service.SyncGroupReq) (*servic
 			ErrorCode: service.UNKNOWN_SERVER_ERROR,
 		}, nil
 	}
+	logrus.Infof("%s syncing group: %s, memberId: %s", addr.String(), req.GroupId, req.MemberId)
 	syncGroupResp, err := k.groupCoordinator.HandleSyncGroup(user.username, req.GroupId, req.MemberId, req.GenerationId, req.GroupAssignments)
 	if err != nil {
 		logrus.Errorf("unexpected exception in sync group: %s, error: %s", req.GroupId, err)
@@ -423,7 +423,6 @@ func (k *KafkaImpl) OffsetCommitPartition(addr net.Addr, kafkaTopic string, req 
 }
 
 func (k *KafkaImpl) OffsetFetch(addr net.Addr, topic string, req *service.OffsetFetchPartitionReq) (*service.OffsetFetchPartitionResp, error) {
-	logrus.Infof("%s fetch topic: %s offset, partition: %d", addr.String(), topic, req.PartitionId)
 	user, exist := k.userInfoManager[addr.String()]
 	if !exist {
 		logrus.Errorf("offset fetch failed when get userinfo by addr %s, kafka topic: %s", addr.String(), topic)
@@ -431,6 +430,7 @@ func (k *KafkaImpl) OffsetFetch(addr net.Addr, topic string, req *service.Offset
 			ErrorCode: int16(service.UNKNOWN_SERVER_ERROR),
 		}, nil
 	}
+	logrus.Infof("%s fetch topic: %s offset, partition: %d", addr.String(), topic, req.PartitionId)
 	partitionedTopic, err := k.partitionedTopic(user, topic, req.PartitionId)
 	if err != nil {
 		logrus.Errorf("offset fetch failed when get pulsar topic %s, kafka topic: %s", addr.String(), topic)

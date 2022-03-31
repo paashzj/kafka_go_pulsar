@@ -24,12 +24,14 @@ import (
 	"time"
 )
 
-var (
+const (
 	groupId      = "test-group-id"
-	memberId     = ""
 	generation   = 1
 	testUsername = "testGroupUser"
+)
 
+var (
+	memberId     = ""
 	kafsarConfig = KafsarConfig{
 		MaxConsumersPerGroup:     1,
 		GroupMinSessionTimeoutMs: 0,
