@@ -618,7 +618,6 @@ func (k *KafkaImpl) Disconnect(addr net.Addr) {
 	k.mutex.Lock()
 	delete(k.userInfoManager, addr.String())
 	k.mutex.Unlock()
-
 }
 
 func (k *KafkaImpl) Close() {
