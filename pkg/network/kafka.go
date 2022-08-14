@@ -19,7 +19,6 @@ package network
 
 import (
 	"context"
-	"fmt"
 	"github.com/paashzj/kafka_go_pulsar/pkg/network/ctx"
 	"github.com/paashzj/kafka_go_pulsar/pkg/service"
 	"github.com/panjf2000/gnet"
@@ -35,28 +34,21 @@ var connCount int32
 
 var connMutex sync.Mutex
 
-var serverConfig *kgnet.GnetConfig
-
 func Run(config *kgnet.GnetConfig, kfkProtocolConfig *KafkaProtocolConfig, impl service.KfkServer) (*Server, error) {
-	serverConfig = config
 	server := &Server{
 		kafkaProtocolConfig: kfkProtocolConfig,
 		kafkaImpl:           impl,
 	}
-	kafkaServer := kgnet.NewKafkaServer(*config, server)
+	server.kafkaServer = kgnet.NewKafkaServer(*config, server)
 	go func() {
-		err := kafkaServer.Run()
+		err := server.kafkaServer.Run()
 		logrus.Error("kafsar broker started error ", err)
 	}()
 	return server, nil
 }
 
-func Close() (err error) {
-	if serverConfig != nil {
-		addr := fmt.Sprintf("tcp://%s:%d", serverConfig.ListenHost, serverConfig.ListenPort)
-		err = gnet.Stop(context.Background(), addr)
-	}
-	return
+func (s *Server) Close(ctx context.Context) (err error) {
+	return s.kafkaServer.Stop(ctx)
 }
 
 func (s *Server) OnInitComplete(server gnet.Server) (action gnet.Action) {
@@ -290,4 +282,5 @@ type Server struct {
 	SaslMap             sync.Map
 	kafkaProtocolConfig *KafkaProtocolConfig
 	kafkaImpl           service.KfkServer
+	kafkaServer         *kgnet.KafkaServer
 }

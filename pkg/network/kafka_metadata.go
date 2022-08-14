@@ -36,25 +36,23 @@ func (s *Server) ReactMetadata(ctx *ctx.NetworkContext, req *codec.MetadataReq, 
 	var metadataResp = &codec.MetadataResp{}
 	partitionNum, err := s.kafkaImpl.PartitionNum(ctx.Addr, topic)
 	if err != nil {
-		metadataResp2 := codec.MetadataResp{}
-		metadataResp2.CorrelationId = req.CorrelationId
-		metadataResp2.BrokerMetadataList = make([]*codec.BrokerMetadata, 1)
-		metadataResp2.BrokerMetadataList[0] = &codec.BrokerMetadata{NodeId: config.NodeId, Host: config.AdvertiseHost, Port: int(config.AdvertisePort), Rack: nil}
-		metadataResp2.ClusterId = config.ClusterId
-		metadataResp2.ControllerId = config.NodeId
-		metadataResp2.TopicMetadataList = make([]*codec.TopicMetadata, 1)
+		metadataResp.CorrelationId = req.CorrelationId
+		metadataResp.BrokerMetadataList = make([]*codec.BrokerMetadata, 1)
+		metadataResp.BrokerMetadataList[0] = &codec.BrokerMetadata{NodeId: config.NodeId, Host: config.AdvertiseHost, Port: int(config.AdvertisePort), Rack: nil}
+		metadataResp.ClusterId = config.ClusterId
+		metadataResp.ControllerId = config.NodeId
+		metadataResp.TopicMetadataList = make([]*codec.TopicMetadata, 1)
 		topicMetadata := codec.TopicMetadata{ErrorCode: int16(service.UNKNOWN_SERVER_ERROR), Topic: topic, IsInternal: false, TopicAuthorizedOperation: -2147483648}
 		topicMetadata.PartitionMetadataList = make([]*codec.PartitionMetadata, 0)
-		metadataResp2.TopicMetadataList[0] = &topicMetadata
-		metadataResp2.ClusterAuthorizedOperation = -2147483648
+		metadataResp.TopicMetadataList[0] = &topicMetadata
+		metadataResp.ClusterAuthorizedOperation = -2147483648
 	} else {
-		metadataResp2 := codec.MetadataResp{}
-		metadataResp2.CorrelationId = req.CorrelationId
-		metadataResp2.BrokerMetadataList = make([]*codec.BrokerMetadata, 1)
-		metadataResp2.BrokerMetadataList[0] = &codec.BrokerMetadata{NodeId: config.NodeId, Host: config.AdvertiseHost, Port: int(config.AdvertisePort), Rack: nil}
-		metadataResp2.ClusterId = config.ClusterId
-		metadataResp2.ControllerId = config.NodeId
-		metadataResp2.TopicMetadataList = make([]*codec.TopicMetadata, 1)
+		metadataResp.CorrelationId = req.CorrelationId
+		metadataResp.BrokerMetadataList = make([]*codec.BrokerMetadata, 1)
+		metadataResp.BrokerMetadataList[0] = &codec.BrokerMetadata{NodeId: config.NodeId, Host: config.AdvertiseHost, Port: int(config.AdvertisePort), Rack: nil}
+		metadataResp.ClusterId = config.ClusterId
+		metadataResp.ControllerId = config.NodeId
+		metadataResp.TopicMetadataList = make([]*codec.TopicMetadata, 1)
 		topicMetadata := codec.TopicMetadata{ErrorCode: 0, Topic: topic, IsInternal: false, TopicAuthorizedOperation: -2147483648}
 		topicMetadata.PartitionMetadataList = make([]*codec.PartitionMetadata, partitionNum)
 		for i := 0; i < partitionNum; i++ {
@@ -65,8 +63,8 @@ func (s *Server) ReactMetadata(ctx *ctx.NetworkContext, req *codec.MetadataReq, 
 			partitionMetadata.CaughtReplicas = replicas
 			topicMetadata.PartitionMetadataList[i] = partitionMetadata
 		}
-		metadataResp2.TopicMetadataList[0] = &topicMetadata
-		metadataResp2.ClusterAuthorizedOperation = -2147483648
+		metadataResp.TopicMetadataList[0] = &topicMetadata
+		metadataResp.ClusterAuthorizedOperation = -2147483648
 	}
 	return metadataResp, gnet.None
 }
