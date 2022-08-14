@@ -34,7 +34,7 @@ func (s *Server) SaslHandshake(frame []byte, version int16) ([]byte, gnet.Action
 func (s *Server) ReactSaslVersion(frame []byte, version int16) ([]byte, gnet.Action) {
 	req, r, stack := codec.DecodeSaslHandshakeReq(frame, version)
 	if r != nil {
-		logrus.Warn("decode sync group error", r, string(stack))
+		logrus.Warn("decode sasl handshake error", r, string(stack))
 		return nil, gnet.Close
 	}
 	logrus.Debug("sasl handshake request ", req)

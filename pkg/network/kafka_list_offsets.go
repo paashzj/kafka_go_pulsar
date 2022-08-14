@@ -36,7 +36,7 @@ func (s *Server) ListOffsets(ctx *ctx.NetworkContext, frame []byte, version int1
 func (s *Server) ListOffsetsVersion(ctx *ctx.NetworkContext, frame []byte, version int16) ([]byte, gnet.Action) {
 	req, r, stack := codec.DecodeListOffsetsReq(frame, version)
 	if r != nil {
-		logrus.Warn("decode sync group error", r, string(stack))
+		logrus.Warn("decode list offsets error", r, string(stack))
 		return nil, gnet.Close
 	}
 	if !s.checkSasl(ctx) {

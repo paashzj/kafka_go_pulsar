@@ -36,7 +36,7 @@ func (s *Server) Heartbeat(frame []byte, version int16, context *ctx.NetworkCont
 func (s *Server) ReactHeartbeatVersion(frame []byte, version int16, context *ctx.NetworkContext) ([]byte, gnet.Action) {
 	heartbeatReqV4, r, stack := codec.DecodeHeartbeatReq(frame, version)
 	if r != nil {
-		logrus.Warn("decode sync group error", r, string(stack))
+		logrus.Warn("decode heartbeat error", r, string(stack))
 		return nil, gnet.Close
 	}
 	logrus.Debug("heart beat req ", heartbeatReqV4)

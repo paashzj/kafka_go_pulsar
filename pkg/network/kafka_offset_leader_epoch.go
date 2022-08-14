@@ -36,7 +36,7 @@ func (s *Server) OffsetForLeaderEpoch(ctx *ctx.NetworkContext, frame []byte, ver
 func (s *Server) OffsetForLeaderEpochVersion(ctx *ctx.NetworkContext, frame []byte, version int16) ([]byte, gnet.Action) {
 	req, r, stack := codec.DecodeOffsetForLeaderEpochReq(frame, version)
 	if r != nil {
-		logrus.Warn("decode sync group error", r, string(stack))
+		logrus.Warn("decode offset for leader epoch error", r, string(stack))
 		return nil, gnet.Close
 	}
 	if !s.checkSasl(ctx) {

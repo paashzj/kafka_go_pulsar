@@ -36,7 +36,7 @@ func (s *Server) Produce(ctx *ctx.NetworkContext, frame []byte, version int16, c
 func (s *Server) ReactProduceVersion(ctx *ctx.NetworkContext, frame []byte, version int16, config *KafkaProtocolConfig) ([]byte, gnet.Action) {
 	req, r, stack := codec.DecodeProduceReq(frame, version)
 	if r != nil {
-		logrus.Warn("decode sync group error", r, string(stack))
+		logrus.Warn("decode producer error", r, string(stack))
 		return nil, gnet.Close
 	}
 	if !s.checkSasl(ctx) {

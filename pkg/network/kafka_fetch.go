@@ -36,7 +36,7 @@ func (s *Server) Fetch(ctx *ctx.NetworkContext, frame []byte, version int16) ([]
 func (s *Server) ReactFetchVersion(ctx *ctx.NetworkContext, frame []byte, version int16) ([]byte, gnet.Action) {
 	req, r, stack := codec.DecodeFetchReq(frame, version)
 	if r != nil {
-		logrus.Warn("decode sync group error", r, string(stack))
+		logrus.Warn("decode fetch error", r, string(stack))
 		return nil, gnet.Close
 	}
 	if !s.checkSasl(ctx) {

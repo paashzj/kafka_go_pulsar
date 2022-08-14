@@ -36,7 +36,7 @@ func (s *Server) JoinGroup(ctx *ctx.NetworkContext, frame []byte, version int16)
 func (s *Server) ReactJoinGroupVersion(ctx *ctx.NetworkContext, frame []byte, version int16) ([]byte, gnet.Action) {
 	req, r, stack := codec.DecodeJoinGroupReq(frame, version)
 	if r != nil {
-		logrus.Warn("decode sync group error", r, string(stack))
+		logrus.Warn("decode join group error", r, string(stack))
 		return nil, gnet.Close
 	}
 	if !s.checkSaslGroup(ctx, req.GroupId) {

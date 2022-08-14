@@ -36,7 +36,7 @@ func (s *Server) OffsetFetch(ctx *ctx.NetworkContext, frame []byte, version int1
 func (s *Server) OffsetFetchVersion(ctx *ctx.NetworkContext, frame []byte, version int16) ([]byte, gnet.Action) {
 	req, r, stack := codec.DecodeOffsetFetchReq(frame, version)
 	if r != nil {
-		logrus.Warn("decode sync group error", r, string(stack))
+		logrus.Warn("decode offset fetch error", r, string(stack))
 		return nil, gnet.Close
 	}
 	if !s.checkSasl(ctx) {

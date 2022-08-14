@@ -36,7 +36,7 @@ func (s *Server) OffsetCommit(ctx *ctx.NetworkContext, frame []byte, version int
 func (s *Server) OffsetCommitVersion(ctx *ctx.NetworkContext, frame []byte, version int16) ([]byte, gnet.Action) {
 	req, r, stack := codec.DecodeOffsetCommitReq(frame, version)
 	if r != nil {
-		logrus.Warn("decode sync group error", r, string(stack))
+		logrus.Warn("decode offset commit error", r, string(stack))
 		return nil, gnet.Close
 	}
 	if !s.checkSasl(ctx) {
