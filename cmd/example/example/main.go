@@ -67,7 +67,7 @@ func main() {
 	config.KafsarConfig.RebalanceTickMs = 100
 	e := &ExampleKafsarImpl{}
 	server := kafsar.NewKafsarServer(config, e)
-	_, err := server.Run()
+	err := server.Run()
 	if err != nil {
 		panic(err)
 	}
