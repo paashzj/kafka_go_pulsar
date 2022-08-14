@@ -92,7 +92,7 @@ func (b *Broker) Run() error {
 	if err != nil {
 		return err
 	}
-	_, err = runKafka(&b.Config.KafsarConfig, k)
+	_, err = b.runKafka(&b.Config.KafsarConfig, k)
 	if err != nil {
 		return err
 	}
@@ -100,7 +100,7 @@ func (b *Broker) Run() error {
 	return nil
 }
 
-func runKafka(config *KafsarConfig, impl service.KfkServer) (*ServerControl, error) {
+func (b *Broker) runKafka(config *KafsarConfig, impl service.KfkServer) (*ServerControl, error) {
 	kfkProtocolConfig := &network.KafkaProtocolConfig{}
 	kfkProtocolConfig.ClusterId = config.ClusterId
 	kfkProtocolConfig.AdvertiseHost = config.AdvertiseHost
