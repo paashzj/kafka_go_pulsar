@@ -34,12 +34,15 @@ func (s *Server) ApiVersions(frame []byte, version int16) ([]byte, gnet.Action) 
 func (s *Server) ReactApiVersion(frame []byte, version int16) ([]byte, gnet.Action) {
 	apiRequest, r, stack := codec.DecodeApiReq(frame, version)
 	if r != nil {
-		logrus.Warn("decode sync group error", r, string(stack))
+		logrus.Warn("decode api versions error", r, string(stack))
 		return nil, gnet.Close
 	}
 	logrus.Debug("api request ", apiRequest)
-	resp := codec.ApiResp{}
-	resp.CorrelationId = apiRequest.CorrelationId
+	resp := codec.ApiResp{
+		BaseResp: codec.BaseResp{
+			CorrelationId: apiRequest.CorrelationId,
+		},
+	}
 	resp.ErrorCode = 0
 	apiRespVersions := make([]*codec.ApiRespVersion, 20)
 	apiRespVersions[0] = &codec.ApiRespVersion{ApiKey: codec.Produce, MinVersion: 0, MaxVersion: 9}

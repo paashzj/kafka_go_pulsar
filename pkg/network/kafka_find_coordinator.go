@@ -34,7 +34,7 @@ func (s *Server) FindCoordinator(frame []byte, version int16, config *KafkaProto
 func (s *Server) FindCoordinatorVersion(frame []byte, version int16, config *KafkaProtocolConfig) ([]byte, gnet.Action) {
 	req, r, stack := codec.DecodeFindCoordinatorReq(frame, version)
 	if r != nil {
-		logrus.Warn("decode sync group error", r, string(stack))
+		logrus.Warn("decode find coordinator error", r, string(stack))
 		return nil, gnet.Close
 	}
 	logrus.Debug("req ", req)
@@ -42,6 +42,9 @@ func (s *Server) FindCoordinatorVersion(frame []byte, version int16, config *Kaf
 		BaseResp: codec.BaseResp{
 			CorrelationId: req.CorrelationId,
 		},
+		NodeId: config.NodeId,
+		Host:   config.AdvertiseHost,
+		Port:   config.AdvertisePort,
 	}
 	logrus.Debug("resp ", resp)
 	return resp.Bytes(version), gnet.None
