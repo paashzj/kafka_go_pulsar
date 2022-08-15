@@ -104,7 +104,7 @@ func TestFetchPartitionNoMessage(t *testing.T) {
 		ClientId: clientId,
 	}
 	auth, errorCode := k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	// join group
@@ -120,7 +120,7 @@ func TestFetchPartitionNoMessage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	// offset fetch
 	offsetFetchReq := service.OffsetFetchPartitionReq{
@@ -176,7 +176,7 @@ func TestFetchAndCommitOffset(t *testing.T) {
 		ClientId: clientId,
 	}
 	auth, errorCode := k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	// join group
@@ -191,7 +191,7 @@ func TestFetchAndCommitOffset(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	// offset fetch
 	offsetFetchReq := service.OffsetFetchPartitionReq{
@@ -203,7 +203,7 @@ func TestFetchAndCommitOffset(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	// fetch partition
 	fetchPartitionReq := service.FetchPartitionReq{
@@ -212,7 +212,7 @@ func TestFetchAndCommitOffset(t *testing.T) {
 		ClientId:    clientId,
 	}
 	fetchPartitionResp := k.FetchPartition(&addr, topic, &fetchPartitionReq, maxBytes, minBytes, 2000, TracerSpan{})
-	assert.Equal(t, service.NONE, fetchPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, fetchPartitionResp.ErrorCode)
 	assert.Equal(t, maxFetchRecord, len(fetchPartitionResp.RecordBatch.Records))
 	offset := int64(fetchPartitionResp.RecordBatch.Records[0].RelativeOffset) + fetchPartitionResp.RecordBatch.Offset
 	assert.Equal(t, string(message.Payload), string(fetchPartitionResp.RecordBatch.Records[0].Value))
@@ -226,7 +226,7 @@ func TestFetchAndCommitOffset(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, commitPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, commitPartitionResp.ErrorCode)
 	// acquire offset
 	time.Sleep(5 * time.Second)
 	acquireOffset, b := k.GetOffsetManager().AcquireOffset(username, topic, groupId, partition)
@@ -263,7 +263,7 @@ func TestFetchOffsetAndOffsetCommit(t *testing.T) {
 		ClientId: clientId,
 	}
 	auth, errorCode := k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	// join group
@@ -278,7 +278,7 @@ func TestFetchOffsetAndOffsetCommit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	// offset fetch
 	offsetFetchReq := service.OffsetFetchPartitionReq{
@@ -290,7 +290,7 @@ func TestFetchOffsetAndOffsetCommit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	// fetch partition
 	fetchPartitionReq := service.FetchPartitionReq{
@@ -299,7 +299,7 @@ func TestFetchOffsetAndOffsetCommit(t *testing.T) {
 		ClientId:    clientId,
 	}
 	fetchPartitionResp := k.FetchPartition(&addr, topic, &fetchPartitionReq, maxBytes, minBytes, 2000, TracerSpan{})
-	assert.Equal(t, service.NONE, fetchPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, fetchPartitionResp.ErrorCode)
 	assert.Equal(t, maxFetchRecord, len(fetchPartitionResp.RecordBatch.Records))
 	offset := int64(fetchPartitionResp.RecordBatch.Records[0].RelativeOffset) + fetchPartitionResp.RecordBatch.Offset
 	logrus.Infof("offset is : %d", offset)
@@ -314,7 +314,7 @@ func TestFetchOffsetAndOffsetCommit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, commitPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, commitPartitionResp.ErrorCode)
 	time.Sleep(5 * time.Second)
 	// leave group
 	member := []*service.LeaveGroupMember{{
@@ -329,7 +329,7 @@ func TestFetchOffsetAndOffsetCommit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, leave.ErrorCode, service.NONE)
+	assert.Equal(t, leave.ErrorCode, codec.NONE)
 
 	// send message again
 	message = pulsar.ProducerMessage{Value: testContent}
@@ -343,7 +343,7 @@ func TestFetchOffsetAndOffsetCommit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	// offset fetch
 	offsetFetchReq = service.OffsetFetchPartitionReq{
@@ -355,16 +355,16 @@ func TestFetchOffsetAndOffsetCommit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	fetchPartitionResp = k.FetchPartition(&addr, topic, &fetchPartitionReq, maxBytes, minBytes, 2000, TracerSpan{})
-	assert.Equal(t, service.NONE, fetchPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, fetchPartitionResp.ErrorCode)
 	assert.Equal(t, maxFetchRecord, len(fetchPartitionResp.RecordBatch.Records))
 	offset = int64(fetchPartitionResp.RecordBatch.Records[0].RelativeOffset) + fetchPartitionResp.RecordBatch.Offset
 	assert.Equal(t, string(message.Payload), string(fetchPartitionResp.RecordBatch.Records[0].Value))
 
 	fetchPartitionResp = k.FetchPartition(&addr, topic, &fetchPartitionReq, maxBytes, minBytes, 2000, TracerSpan{})
-	assert.Equal(t, service.NONE, fetchPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, fetchPartitionResp.ErrorCode)
 	assert.Equal(t, 0, len(fetchPartitionResp.RecordBatch.Records))
 
 	// offset commit
@@ -377,7 +377,7 @@ func TestFetchOffsetAndOffsetCommit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, commitPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, commitPartitionResp.ErrorCode)
 	// acquire offset
 	time.Sleep(5 * time.Second)
 	acquireOffset, b := k.GetOffsetManager().AcquireOffset(username, topic, groupId, partition)
@@ -419,7 +419,7 @@ func TestEarliestMsg(t *testing.T) {
 		ClientId: clientId,
 	}
 	auth, errorCode := k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	// join group
@@ -434,7 +434,7 @@ func TestEarliestMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	// offset fetch
 	offsetFetchReq := service.OffsetFetchPartitionReq{
@@ -446,7 +446,7 @@ func TestEarliestMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	// offset fetch
 	listOffset := service.ListOffsetsPartitionReq{
@@ -458,7 +458,7 @@ func TestEarliestMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, listPartition.ErrorCode)
+	assert.Equal(t, codec.NONE, listPartition.ErrorCode)
 
 	// fetch partition
 	fetchPartitionReq := service.FetchPartitionReq{
@@ -467,7 +467,7 @@ func TestEarliestMsg(t *testing.T) {
 		ClientId:    clientId,
 	}
 	fetchPartitionResp := k.FetchPartition(&addr, topic, &fetchPartitionReq, maxBytes, minBytes, 2000, TracerSpan{})
-	assert.Equal(t, service.NONE, fetchPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, fetchPartitionResp.ErrorCode)
 	assert.Equal(t, maxFetchRecord, len(fetchPartitionResp.RecordBatch.Records))
 	offset := int64(fetchPartitionResp.RecordBatch.Records[0].RelativeOffset) + fetchPartitionResp.RecordBatch.Offset
 	assert.Equal(t, string(message.Payload), string(fetchPartitionResp.RecordBatch.Records[0].Value))
@@ -481,7 +481,7 @@ func TestEarliestMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, commitPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, commitPartitionResp.ErrorCode)
 	// acquire offset
 	time.Sleep(5 * time.Second)
 	acquireOffset, b := k.GetOffsetManager().AcquireOffset(username, topic, groupId, partition)
@@ -524,7 +524,7 @@ func TestLatestMsg(t *testing.T) {
 		ClientId: clientId,
 	}
 	auth, errorCode := k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	// join group
@@ -539,7 +539,7 @@ func TestLatestMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	// offset fetch
 	offsetFetchReq := service.OffsetFetchPartitionReq{
@@ -551,7 +551,7 @@ func TestLatestMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	// offset fetch
 	listOffset := service.ListOffsetsPartitionReq{
@@ -563,7 +563,7 @@ func TestLatestMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, listPartition.ErrorCode)
+	assert.Equal(t, codec.NONE, listPartition.ErrorCode)
 
 	// fetch partition
 	fetchPartitionReq := service.FetchPartitionReq{
@@ -572,7 +572,7 @@ func TestLatestMsg(t *testing.T) {
 		ClientId:    clientId,
 	}
 	fetchPartitionResp := k.FetchPartition(&addr, topic, &fetchPartitionReq, maxBytes, minBytes, 2000, TracerSpan{})
-	assert.Equal(t, service.NONE, fetchPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, fetchPartitionResp.ErrorCode)
 	assert.Equal(t, maxFetchRecord, len(fetchPartitionResp.RecordBatch.Records))
 	offset := int64(fetchPartitionResp.RecordBatch.Records[0].RelativeOffset) + fetchPartitionResp.RecordBatch.Offset
 	assert.Equal(t, string(message.Payload), string(fetchPartitionResp.RecordBatch.Records[0].Value))
@@ -586,7 +586,7 @@ func TestLatestMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, commitPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, commitPartitionResp.ErrorCode)
 	// acquire offset
 	time.Sleep(5 * time.Second)
 	acquireOffset, b := k.GetOffsetManager().AcquireOffset(username, topic, groupId, partition)
@@ -609,7 +609,7 @@ func TestLatestTypeWithNoMsg(t *testing.T) {
 		ClientId: clientId,
 	}
 	auth, errorCode := k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	// join group
@@ -624,7 +624,7 @@ func TestLatestTypeWithNoMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	// offset fetch
 	offsetFetchReq := service.OffsetFetchPartitionReq{
@@ -636,7 +636,7 @@ func TestLatestTypeWithNoMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	// offset fetch
 	listOffset := service.ListOffsetsPartitionReq{
@@ -648,7 +648,7 @@ func TestLatestTypeWithNoMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, listPartition.ErrorCode)
+	assert.Equal(t, codec.NONE, listPartition.ErrorCode)
 }
 
 func TestEarliestTypeWithNoMsg(t *testing.T) {
@@ -666,7 +666,7 @@ func TestEarliestTypeWithNoMsg(t *testing.T) {
 		ClientId: clientId,
 	}
 	auth, errorCode := k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	// join group
@@ -681,7 +681,7 @@ func TestEarliestTypeWithNoMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	// offset fetch
 	offsetFetchReq := service.OffsetFetchPartitionReq{
@@ -693,7 +693,7 @@ func TestEarliestTypeWithNoMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	// offset fetch
 	listOffset := service.ListOffsetsPartitionReq{
@@ -705,7 +705,7 @@ func TestEarliestTypeWithNoMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, listPartition.ErrorCode)
+	assert.Equal(t, codec.NONE, listPartition.ErrorCode)
 }
 
 func TestMinBytesMsg(t *testing.T) {
@@ -743,7 +743,7 @@ func TestMinBytesMsg(t *testing.T) {
 		ClientId: clientId,
 	}
 	auth, errorCode := k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	// join group
@@ -758,7 +758,7 @@ func TestMinBytesMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	// offset fetch
 	offsetFetchReq := service.OffsetFetchPartitionReq{
@@ -770,7 +770,7 @@ func TestMinBytesMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	// offset fetch
 	listOffset := service.ListOffsetsPartitionReq{
@@ -782,7 +782,7 @@ func TestMinBytesMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, listPartition.ErrorCode)
+	assert.Equal(t, codec.NONE, listPartition.ErrorCode)
 
 	// fetch partition
 	fetchPartitionReq := service.FetchPartitionReq{
@@ -792,7 +792,7 @@ func TestMinBytesMsg(t *testing.T) {
 	}
 	testMinBytes := 1
 	fetchPartitionResp := k.FetchPartition(&addr, topic, &fetchPartitionReq, maxBytes, testMinBytes, 2000, TracerSpan{})
-	assert.Equal(t, service.NONE, fetchPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, fetchPartitionResp.ErrorCode)
 	assert.Equal(t, 1, len(fetchPartitionResp.RecordBatch.Records))
 }
 
@@ -831,7 +831,7 @@ func TestMaxBytesMsg(t *testing.T) {
 		ClientId: clientId,
 	}
 	auth, errorCode := k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	// join group
@@ -846,7 +846,7 @@ func TestMaxBytesMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	// offset fetch
 	offsetFetchReq := service.OffsetFetchPartitionReq{
@@ -858,7 +858,7 @@ func TestMaxBytesMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	// offset fetch
 	listOffset := service.ListOffsetsPartitionReq{
@@ -870,7 +870,7 @@ func TestMaxBytesMsg(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, listPartition.ErrorCode)
+	assert.Equal(t, codec.NONE, listPartition.ErrorCode)
 
 	// fetch partition
 	fetchPartitionReq := service.FetchPartitionReq{
@@ -881,7 +881,7 @@ func TestMaxBytesMsg(t *testing.T) {
 	testMinBytes := 1
 	maxBytes := 15
 	fetchPartitionResp := k.FetchPartition(&addr, topic, &fetchPartitionReq, maxBytes, testMinBytes, 5000, TracerSpan{})
-	assert.Equal(t, service.NONE, fetchPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, fetchPartitionResp.ErrorCode)
 	assert.Equal(t, 2, len(fetchPartitionResp.RecordBatch.Records))
 }
 
@@ -901,7 +901,7 @@ func TestMultiMemberLeaveGroup(t *testing.T) {
 		ClientId: clientId,
 	}
 	auth, errorCode := k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	// join group
@@ -916,7 +916,7 @@ func TestMultiMemberLeaveGroup(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 	// sync group
 	groupAssignments := make([]*service.GroupAssignment, 1)
 	g := &service.GroupAssignment{}
@@ -947,7 +947,7 @@ func TestMultiMemberLeaveGroup(t *testing.T) {
 		}
 		joinGroupResp2, err := k.GroupJoin(&addr, &joinGroupReq2)
 		assert.Nil(t, err)
-		assert.Equal(t, service.NONE, joinGroupResp2.ErrorCode)
+		assert.Equal(t, codec.NONE, joinGroupResp2.ErrorCode)
 	}()
 
 	// the first one join
@@ -974,7 +974,7 @@ func TestMultiMemberLeaveGroup(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	var members []*service.LeaveGroupMember
 	leaveGroupMembers := append(members, &service.LeaveGroupMember{
@@ -985,7 +985,7 @@ func TestMultiMemberLeaveGroup(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, leaveGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, leaveGroupResp.ErrorCode)
 
 	var members2 []*service.LeaveGroupMember
 	leaveGroupMembers2 := append(members2, &service.LeaveGroupMember{
@@ -996,7 +996,7 @@ func TestMultiMemberLeaveGroup(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, leaveGroupResp2.ErrorCode)
+	assert.Equal(t, codec.NONE, leaveGroupResp2.ErrorCode)
 }
 
 func TestFetchAfterDisConnect(t *testing.T) {
@@ -1028,7 +1028,7 @@ func TestFetchAfterDisConnect(t *testing.T) {
 		ClientId: clientId,
 	}
 	auth, errorCode := k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	// join group
@@ -1043,7 +1043,7 @@ func TestFetchAfterDisConnect(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	// offset fetch
 	offsetFetchReq := service.OffsetFetchPartitionReq{
@@ -1055,7 +1055,7 @@ func TestFetchAfterDisConnect(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	// fetch partition
 	fetchPartitionReq := service.FetchPartitionReq{
@@ -1064,7 +1064,7 @@ func TestFetchAfterDisConnect(t *testing.T) {
 		ClientId:    testClientId,
 	}
 	fetchPartitionResp := k.FetchPartition(&addr, topic, &fetchPartitionReq, maxBytes, minBytes, 2000, TracerSpan{})
-	assert.Equal(t, service.NONE, fetchPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, fetchPartitionResp.ErrorCode)
 	assert.Equal(t, maxFetchRecord, len(fetchPartitionResp.RecordBatch.Records))
 	offset := int64(fetchPartitionResp.RecordBatch.Records[0].RelativeOffset) + fetchPartitionResp.RecordBatch.Offset
 	assert.Equal(t, string(message.Payload), string(fetchPartitionResp.RecordBatch.Records[0].Value))
@@ -1078,7 +1078,7 @@ func TestFetchAfterDisConnect(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, commitPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, commitPartitionResp.ErrorCode)
 	// acquire offset
 	time.Sleep(5 * time.Second)
 	acquireOffset, b := k.GetOffsetManager().AcquireOffset(username, topic, groupId, partition)
@@ -1095,23 +1095,23 @@ func TestFetchAfterDisConnect(t *testing.T) {
 	logrus.Infof("send msg to pulsar %s", messageId)
 
 	auth, errorCode = k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	joinGroupResp, err = k.GroupJoin(&addr, &joinGroupReq)
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	offsetFetchPartitionResp, err = k.OffsetFetch(&addr, topic, &offsetFetchReq)
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	fetchPartitionResp = k.FetchPartition(&addr, topic, &fetchPartitionReq, maxBytes, minBytes, 2000, TracerSpan{})
-	assert.Equal(t, service.NONE, fetchPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, fetchPartitionResp.ErrorCode)
 	assert.Equal(t, maxFetchRecord, len(fetchPartitionResp.RecordBatch.Records))
 	assert.Equal(t, string(message.Payload), string(fetchPartitionResp.RecordBatch.Records[0].Value))
 }
@@ -1151,7 +1151,7 @@ func TestMsgWithFlowQuota(t *testing.T) {
 		ClientId: clientId,
 	}
 	auth, errorCode := k.SaslAuth(&addr, saslReq)
-	assert.Equal(t, service.NONE, errorCode)
+	assert.Equal(t, codec.NONE, errorCode)
 	assert.True(t, true, auth)
 
 	// join group
@@ -1166,7 +1166,7 @@ func TestMsgWithFlowQuota(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, joinGroupResp.ErrorCode)
+	assert.Equal(t, codec.NONE, joinGroupResp.ErrorCode)
 
 	// offset fetch
 	offsetFetchReq := service.OffsetFetchPartitionReq{
@@ -1178,7 +1178,7 @@ func TestMsgWithFlowQuota(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, int16(service.NONE), offsetFetchPartitionResp.ErrorCode)
+	assert.Equal(t, int16(codec.NONE), offsetFetchPartitionResp.ErrorCode)
 
 	// offset fetch
 	listOffset := service.ListOffsetsPartitionReq{
@@ -1190,7 +1190,7 @@ func TestMsgWithFlowQuota(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, service.NONE, listPartition.ErrorCode)
+	assert.Equal(t, codec.NONE, listPartition.ErrorCode)
 
 	// fetch partition
 	fetchPartitionReq := service.FetchPartitionReq{
@@ -1201,6 +1201,6 @@ func TestMsgWithFlowQuota(t *testing.T) {
 	testMinBytes := 1
 	maxBytes := 15
 	fetchPartitionResp := k.FetchPartition(&addr, topic, &fetchPartitionReq, maxBytes, testMinBytes, 5000, TracerSpan{})
-	assert.Equal(t, service.NONE, fetchPartitionResp.ErrorCode)
+	assert.Equal(t, codec.NONE, fetchPartitionResp.ErrorCode)
 	assert.Equal(t, 0, len(fetchPartitionResp.RecordBatch.Records))
 }
