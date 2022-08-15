@@ -26,6 +26,7 @@ import (
 	"github.com/paashzj/kafka_go_pulsar/pkg/service"
 	"github.com/paashzj/kafka_go_pulsar/pkg/test"
 	"github.com/paashzj/kafka_go_pulsar/pkg/utils"
+	"github.com/protocol-laboratory/kafka-codec-go/codec"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"net"
