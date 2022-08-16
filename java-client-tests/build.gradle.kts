@@ -23,6 +23,9 @@ group = "com.github.kafsar"
 version = "0.0.1-SNAPSHOT"
 
 repositories {
+    maven{ setUrl ("https://maven.aliyun.com/repository/central") }
+    maven{ setUrl ("https://maven.aliyun.com/repository/public") }
+    maven{ setUrl ("https://maven.aliyun.com/repository/gradle-plugin")}
     mavenCentral()
 }
 
