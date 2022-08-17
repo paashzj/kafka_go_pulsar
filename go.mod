@@ -1,6 +1,6 @@
 module github.com/paashzj/kafka_go_pulsar
 
-go 1.18
+go 1.19
 
 require (
 	github.com/SkyAPM/go2sky v1.5.0

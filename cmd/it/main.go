@@ -56,7 +56,7 @@ func main() {
 	config.KafsarConfig.InitialDelayedJoinMs = 3000
 	config.KafsarConfig.RebalanceTickMs = 100
 	config.TraceConfig.DisableTracing = true
-	e := &ItKafsaImpl{}
+	e := &ItKafsarImpl{}
 	impl, err := kafsar.NewKafsar(e, config)
 	if err != nil {
 		panic(err)
