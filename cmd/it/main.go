@@ -27,7 +27,7 @@ import (
 
 func main() {
 	flag.Parse()
-	gnetConfig := kgnet.GnetConfig{
+	gnetConfig := kgnet.GnetServerConfig{
 		ListenHost:   "0.0.0.0",
 		ListenPort:   9092,
 		EventLoopNum: 100,
