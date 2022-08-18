@@ -137,7 +137,7 @@ func (s *Server) UnSupportedApi(c gnet.Conn, apiKey codec.ApiCode, apiVersion in
 
 func (s *Server) ApiVersion(c gnet.Conn, req *codec.ApiReq) (*codec.ApiResp, gnet.Action) {
 	version := req.ApiVersion
-	if version == 0 || version == 2 || version == 3 {
+	if version <= 3 {
 		return s.ReactApiVersion(req)
 	}
 	logrus.Warn("Unsupported apiVersion version", version)
