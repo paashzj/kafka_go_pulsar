@@ -129,6 +129,17 @@ func (b *Broker) Run() error {
 }
 
 func (b *Broker) Produce(addr net.Addr, kafkaTopic string, partition int, req *codec.ProducePartitionReq) (*codec.ProducePartitionResp, error) {
+	span := b.tracer.NewSpan(context.Background(), "Produce", "broker produce msg starting")
+	defer b.tracer.EndSpan(span, fmt.Sprintf("produce msg %s:%d", kafkaTopic, partition))
+	b.mutex.RLock()
+	user, exist := b.userInfoManager[addr.String()]
+	b.mutex.RUnlock()
+	if !exist {
+		logrus.Errorf("user not exist. username: %s, kafkaTopic: %s", user.username, kafkaTopic)
+		return &codec.ProducePartitionResp{
+			ErrorCode: codec.TOPIC_AUTHORIZATION_FAILED,
+		}, nil
+	}
 	panic("implement me")
 }
 
@@ -264,6 +275,32 @@ OUT:
 		LogStartOffset:   0,
 		RecordBatch:      &recordBatch,
 	}
+}
+
+func (b *Broker) getProducer(addr net.Addr, username string, topic string) (pulsar.Producer, error) {
+	pulsarTopic, err := b.server.PulsarTopic(username, topic)
+	if err != nil {
+		logrus.Errorf("get pulsar topic failed. username: %s, topic: %s", username, topic)
+		return nil, err
+	}
+	b.mutex.Lock()
+	producer, exist := b.producerManager[addr.String()]
+	if !exist {
+		options := pulsar.ProducerOptions{}
+		options.Topic = pulsarTopic
+		options.MaxPendingMessages = b.kafsarConfig.MaxProducerRecordSize
+		options.BatchingMaxSize = uint(b.kafsarConfig.MaxBatchSize)
+		producer, err = b.pulsarCommonClient.CreateProducer(options)
+		if err != nil {
+			b.mutex.Unlock()
+			logrus.Errorf("crate producer failed. topic: %s, err: %s", pulsarTopic, err)
+			return nil, err
+		}
+		logrus.Infof("create producer success. addr: %s", addr.String())
+		b.producerManager[addr.String()] = producer
+	}
+	b.mutex.Unlock()
+	return producer, nil
 }
 
 func (b *Broker) GroupJoin(addr net.Addr, req *codec.JoinGroupReq) (*codec.JoinGroupResp, error) {
