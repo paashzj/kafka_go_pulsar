@@ -30,7 +30,7 @@ func (s *Server) ReactMetadata(ctx *ctx.NetworkContext, req *codec.MetadataReq, 
 	if len(topics) == 0 {
 		logrus.Warn("request metadata topic length is 0", ctx.Addr)
 	}
-	if len(topics) > 1 || len(topics) == 0 {
+	if len(topics) > 1 {
 		logrus.Error("currently, not support more than one topic", ctx.Addr)
 		return nil, gnet.Close
 	}
