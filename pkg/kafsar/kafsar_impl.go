@@ -277,32 +277,6 @@ OUT:
 	}
 }
 
-func (b *Broker) getProducer(addr net.Addr, username string, topic string) (pulsar.Producer, error) {
-	pulsarTopic, err := b.server.PulsarTopic(username, topic)
-	if err != nil {
-		logrus.Errorf("get pulsar topic failed. username: %s, topic: %s", username, topic)
-		return nil, err
-	}
-	b.mutex.Lock()
-	producer, exist := b.producerManager[addr.String()]
-	if !exist {
-		options := pulsar.ProducerOptions{}
-		options.Topic = pulsarTopic
-		options.MaxPendingMessages = b.kafsarConfig.MaxProducerRecordSize
-		options.BatchingMaxSize = uint(b.kafsarConfig.MaxBatchSize)
-		producer, err = b.pulsarCommonClient.CreateProducer(options)
-		if err != nil {
-			b.mutex.Unlock()
-			logrus.Errorf("crate producer failed. topic: %s, err: %s", pulsarTopic, err)
-			return nil, err
-		}
-		logrus.Infof("create producer success. addr: %s", addr.String())
-		b.producerManager[addr.String()] = producer
-	}
-	b.mutex.Unlock()
-	return producer, nil
-}
-
 func (b *Broker) GroupJoin(addr net.Addr, req *codec.JoinGroupReq) (*codec.JoinGroupResp, error) {
 	b.mutex.RLock()
 	user, exist := b.userInfoManager[addr.String()]
