@@ -27,15 +27,10 @@ import (
 func (s *Server) ReactMetadata(ctx *ctx.NetworkContext, req *codec.MetadataReq, config *KafkaProtocolConfig) (*codec.MetadataResp, gnet.Action) {
 	logrus.Debug("metadata req ", req)
 	topics := req.Topics
-	if len(topics) == 0 {
-		logrus.Warn("request metadata topic length is 0", ctx.Addr)
-		return nil, gnet.Close
-	}
 	if len(topics) > 1 {
 		logrus.Error("currently, not support more than one topic", ctx.Addr)
 		return nil, gnet.Close
 	}
-	topic := topics[0].Topic
 	var metadataResp = &codec.MetadataResp{
 		BaseResp:                   codec.BaseResp{CorrelationId: req.CorrelationId},
 		ClusterId:                  config.ClusterId,
@@ -45,7 +40,11 @@ func (s *Server) ReactMetadata(ctx *ctx.NetworkContext, req *codec.MetadataReq, 
 			{NodeId: config.NodeId, Host: config.AdvertiseHost, Port: config.AdvertisePort, Rack: nil},
 		},
 	}
-
+	if len(topics) == 0 {
+		metadataResp.TopicMetadataList = make([]*codec.TopicMetadata, 0)
+		return metadataResp, gnet.None
+	}
+	topic := topics[0].Topic
 	partitionNum, err := s.kafsarImpl.PartitionNum(ctx.Addr, topic)
 	if err != nil {
 		metadataResp.TopicMetadataList = make([]*codec.TopicMetadata, 1)
