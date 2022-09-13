@@ -281,13 +281,12 @@ func (g *GroupCoordinatorStandalone) HandleSyncGroup(username, groupId, memberId
 			g.setGroupStatus(group, Stable)
 		}
 		group.groupMemberLock.RLock()
-		curMemberAssignment := string(group.members[memberId].assignment)
 		group.groupMemberLock.RUnlock()
 		if err != nil {
 			logrus.Errorf("member %s sync group %s failed, cause: %s", memberId, groupId, err)
 			return &codec.SyncGroupResp{
 				ErrorCode:        codec.REBALANCE_IN_PROGRESS,
-				MemberAssignment: curMemberAssignment,
+				MemberAssignment: group.members[memberId].assignment,
 			}, nil
 		}
 		if g.isMemberLeader(group, memberId) {
@@ -296,7 +295,7 @@ func (g *GroupCoordinatorStandalone) HandleSyncGroup(username, groupId, memberId
 
 		return &codec.SyncGroupResp{
 			ErrorCode:        codec.NONE,
-			MemberAssignment: curMemberAssignment,
+			MemberAssignment: group.members[memberId].assignment,
 		}, nil
 
 	}
@@ -305,7 +304,7 @@ func (g *GroupCoordinatorStandalone) HandleSyncGroup(username, groupId, memberId
 	if g.getGroupStatus(group) == Stable {
 		return &codec.SyncGroupResp{
 			ErrorCode:        codec.NONE,
-			MemberAssignment: string(group.members[memberId].assignment),
+			MemberAssignment: group.members[memberId].assignment,
 		}, nil
 	}
 	return &codec.SyncGroupResp{
@@ -364,7 +363,7 @@ func (g *GroupCoordinatorStandalone) addMemberAndRebalance(group *Group, clientI
 	if memberId == EmptyMemberId {
 		memberId = clientId + "-" + uuid.New().String()
 	}
-	protocolMap := make(map[string]string)
+	protocolMap := make(map[string][]byte)
 	for i := range protocols {
 		protocolMap[protocols[i].ProtocolName] = protocols[i].ProtocolMetadata
 	}

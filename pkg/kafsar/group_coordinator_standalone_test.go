@@ -40,6 +40,7 @@ var (
 		InitialDelayedJoinMs:     3000,
 		RebalanceTickMs:          100,
 	}
+	rebalanceLock = sync.Mutex{}
 )
 
 func TestHandleJoinGroup(t *testing.T) {
@@ -199,6 +200,7 @@ func TestHandleJoinGroupMultiMember(t *testing.T) {
 }
 
 func oneMemberRebalanceHandler(t *testing.T, groupCoordinator *GroupCoordinatorStandalone, waitGroup *sync.WaitGroup) {
+	rebalanceLock.Lock()
 	// one member join
 	resp, err := groupCoordinator.HandleJoinGroup(testUsername, groupId, memberId, clientId, protocolType, sessionTimeoutMs, protocols)
 	assert.Nil(t, err)
@@ -212,7 +214,7 @@ func oneMemberRebalanceHandler(t *testing.T, groupCoordinator *GroupCoordinatorS
 		for memberId := range members {
 			g := &codec.GroupAssignment{}
 			g.MemberId = memberId
-			g.MemberAssignment = "testAssignment: " + memberId
+			g.MemberAssignment = []byte("testAssignment: " + memberId)
 			groupAssignments[i] = g
 			i++
 		}
@@ -221,6 +223,7 @@ func oneMemberRebalanceHandler(t *testing.T, groupCoordinator *GroupCoordinatorS
 	_, err = groupCoordinator.HandleSyncGroup(testUsername, groupId, resp.MemberId, group.generationId, groupAssignments)
 	assert.Nil(t, err)
 	waitGroup.Done()
+	rebalanceLock.Unlock()
 	for {
 		time.Sleep(time.Second)
 		// one member heartbeat
@@ -287,7 +290,7 @@ func TestHandleSyncGroup(t *testing.T) {
 	memberId = joinGroupResp.MemberId
 	assignment := codec.GroupAssignment{
 		MemberId:         memberId,
-		MemberAssignment: "0001000000010004746573740000000100000000ffffffff",
+		MemberAssignment: []byte("0001000000010004746573740000000100000000ffffffff"),
 	}
 	var groupAssignment []*codec.GroupAssignment
 	groupAssignments := append(groupAssignment, &assignment)
@@ -310,7 +313,7 @@ func TestHandleSyncGroupInvalidParams(t *testing.T) {
 	memberId = joinGroupResp.MemberId
 	assignment := codec.GroupAssignment{
 		MemberId:         memberId,
-		MemberAssignment: "0001000000010004746573740000000100000000ffffffff",
+		MemberAssignment: []byte("0001000000010004746573740000000100000000ffffffff"),
 	}
 	var groupAssignment []*codec.GroupAssignment
 	groupAssignments := append(groupAssignment, &assignment)
